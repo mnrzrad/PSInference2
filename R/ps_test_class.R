@@ -119,7 +119,7 @@ print.ps_test <- function(x, ...) {
   cat(sprintf("  Effective sample size N = Mn = %d\n", x$N))
   cat(bar, "\n")
   cat(sprintf("  Test statistic  : %.6g\n", x$statistic))
-  cat(sprintf("  p-value         : %.4f\n",  x$p.value))
+  cat(sprintf("  p-value         : %s\n",  .ps_fmt_pvalue(x$p.value, x$iterations)))
   cat(sprintf("  alpha           : %.2f\n",   x$alpha))
   cat(sprintf("  Decision        : %s\n",     x$decision))
 
@@ -302,7 +302,7 @@ plot.ps_test <- function(x,
   }
 
   ann_obs  <- sprintf("Observed T* = %s", .fmt(obs_plot))
-  ann_pval <- sprintf("p-value = %.4f", x$p.value)
+  ann_pval <- sprintf("p-value = %s", .ps_fmt_pvalue(x$p.value, x$iterations))
   ann_dec  <- x$decision
   if (two_sided) {
     ann_crit <- sprintf("Reject if T* < %s  or  T* > %s",
@@ -437,4 +437,30 @@ is.ps_test <- function(x) inherits(x, "ps_test")
 .ps_fmt_sci <- function(v) {
   if (abs(v) >= 0.001 && abs(v) < 1e5) return(sprintf("%.4g", v))
   sprintf("%.3e", v)
+}
+
+#' @keywords internal
+#' Format a Monte Carlo p-value for display.
+#' Never returns "0.0000"; uses "< 1/B" notation when the MC count is zero.
+#' @param pval  Numeric p-value in [0, 1].
+#' @param B     Number of Monte Carlo iterations used (determines resolution).
+.ps_fmt_pvalue <- function(pval, B = NULL) {
+  if (is.null(B)) B <- 10000L          # conservative default resolution
+  min_detectable <- 1.0 / B           # smallest non-zero MC p-value
+
+  if (is.na(pval) || !is.finite(pval)) return("NA")
+
+  if (pval == 0 || pval < min_detectable) {
+    # Express as "< 0.0001" (4 sig fig of min_detectable)
+    thresh <- signif(min_detectable, 1)
+    # Format threshold without trailing zeros
+    if (thresh >= 0.001) {
+      return(sprintf("< %.4f", thresh))
+    } else {
+      return(sprintf("< %.2e", thresh))
+    }
+  }
+
+  if (pval >= 0.001) return(sprintf("%.4f", pval))
+  sprintf("%.2e", pval)
 }
