@@ -1,0 +1,46 @@
+Package: PSinference
+Type: Package
+Title: Exact Inference for Multiply Released Plug-in Sampling Synthetic Data
+Version: 1.0.0
+Date: 2026-05-12
+Authors@R: c(
+    person("Ricardo", "Moura",
+           email = "rp.moura@fct.unl.pt",
+           role = c("aut", "cre")),
+    person("Mina", "Norouzirad",
+           email = "m.norouzirad@fct.unl.pt",
+           role = "aut"),
+    person("Vítor", "Augusto",
+           role = "aut"),
+    person("Miguel", "Fonseca",
+           role = "aut"))
+Description: Provides exact finite-sample inferential procedures for
+    singly and multiply released plug-in sampling (PS) synthetic datasets
+    under a multivariate normal model, extending the single-release
+    framework of Klein, Moura and Sinha (2021)
+    <doi:10.1007/s13571-019-00215-9> to M >= 1 synthetic releases.
+    The key insight is that M independently released PS synthetic datasets
+    of size n may be stacked into a single dataset of size Mn, yielding
+    exact pivotal procedures for four features of the covariance structure:
+    generalised variance, sphericity, independence between variable subsets,
+    and regression coefficients. All procedures reduce to the single-release
+    case when M = 1. Includes S3 classes with print, summary, and plot
+    methods; multivariate normality assessment; comparison with naive
+    asymptotic benchmarks; and a comprehensive vignette with a real-data
+    illustration using Brittany soil survey data (Morvan et al., 2023).
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 4.0.0)
+Imports:
+    MASS (>= 7.3-0),
+    ggplot2 (>= 3.4.0),
+    methods
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+VignetteBuilder: knitr
+RoxygenNote: 7.3.3
+URL: https://github.com/ricardomourarpm/PSinference
+BugReports: https://github.com/ricardomourarpm/PSinference/issues

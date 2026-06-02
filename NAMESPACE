@@ -1,0 +1,7 @@
+exportPattern("^[^\\.]")
+S3method(print, ps_test)
+S3method(summary, ps_test)
+S3method(plot, ps_test)
+importFrom(MASS, mvrnorm)
+importFrom(stats, rchisq, rWishart, cov, density,
+           quantile, pchisq)
