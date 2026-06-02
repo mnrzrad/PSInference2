@@ -37,7 +37,7 @@ arbitrary $M \geq 1$ via the substitution $n \to Mn$.
 install.packages("PSinference")
 
 # Development version
-remotes::install_github("ricardomourarpm/PSinference")
+remotes::install_github("mnrzrad/PSinference2")
 ```
 
 ## Quick Start
