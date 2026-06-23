@@ -7,139 +7,155 @@
 utility_measures(X, V, M = 1L, alpha = 0.05, verbose = TRUE)
 }
 \arguments{
-\item{X}{A numeric matrix (\eqn{n \times p}), the original
-confidential data.}
+\item{X}{A numeric matrix or data frame with dimension \eqn{n \times p},
+containing the original confidential data.}
 
-\item{V}{A numeric matrix (\eqn{Mn \times p}), the stacked PS
-synthetic data returned by \code{\link{simSynthData}}.}
+\item{V}{A numeric matrix or data frame with dimension \eqn{Mn \times p},
+containing the stacked PS synthetic data returned by
+\code{\link{simSynthData}}.}
 
-\item{M}{A positive integer. Number of synthetic releases
-(default \code{1L}).}
+\item{M}{Positive integer giving the number of synthetic releases. The
+default is \code{1L}.}
 
-\item{alpha}{Significance level for confidence interval overlap
-(default \code{0.05}).}
+\item{alpha}{Significance level used for confidence interval overlap. The
+default is \code{0.05}.}
 
-\item{verbose}{Logical. If \code{TRUE} (default), prints a formatted
-summary.}
+\item{verbose}{Logical. If \code{TRUE}, the default, a formatted summary
+is printed.}
 }
 \value{
-A list of class \code{ps_utility} (invisibly) with components:
+A list of class \code{ps_utility}, returned invisibly, with components:
 \describe{
   \item{frobenius}{Numeric. Frobenius distance
-    \eqn{\|\hat{\bm{\Sigma}}_{\mathrm{orig}} -
-    \bar{\hat{\bm{\Sigma}}}_{\mathrm{synth}}\|_F}.}
-  \item{smd}{Named numeric vector. Per-variable standardised mean
-    difference \eqn{|\bar{v}_j - \bar{x}_j| / s_{x_j}}.}
-  \item{smd_mean}{Numeric. Mean SMD across all \eqn{p} variables.}
-  \item{var_ratio}{Named numeric vector. Per-variable variance ratio
-    \eqn{\bar{s}^2_{v_j} / s^2_{x_j}}.}
-  \item{pmse}{Numeric. Propensity score MSE
-    \eqn{n^{-1}\sum_i(\hat{p}_i - c)^2} where \eqn{c = n/(n + Mn)}.}
-  \item{pmse_null}{Numeric. Expected pMSE under a correctly
-    specified model: \eqn{c(1-c)(p+1)/(n + Mn)}.}
-  \item{pmse_ratio}{Numeric. \code{pmse / pmse_null}; values near 1
-    indicate good utility, large values indicate distinguishability.}
-  \item{ci_overlap}{Named numeric vector. Per-variable confidence
-    interval overlap (Karr et al., 2006).}
-  \item{ci_overlap_mean}{Numeric. Mean CI overlap.}
-  \item{M}{Integer. Number of releases.}
+    \eqn{\|\hat{\boldsymbol{\Sigma}}_X -
+    \bar{\hat{\boldsymbol{\Sigma}}}_V\|_F}.}
+  \item{smd_mean}{Numeric. Mean standardized mean difference,
+    \eqn{p^{-1}\sum_j |\bar{v}_j - \bar{x}_j|/s_{x_j}}.}
+  \item{var_ratio_range}{Named numeric vector with the minimum and maximum
+    per-variable variance ratios.}
+  \item{pmse_ratio}{Numeric. Ratio \code{pmse / pmse_null}.}
+  \item{ci_overlap_mean}{Numeric. Mean confidence interval overlap across
+    all variables.}
+  \item{M}{Integer. Number of synthetic releases.}
   \item{n}{Integer. Original sample size.}
   \item{p}{Integer. Number of variables.}
+  \item{alpha}{Numeric. Significance level used.}
 }
 }
 \description{
-Computes a battery of utility measures comparing the statistical
-properties of PS synthetic data to the original confidential data.
-Five complementary measures are reported: Frobenius distance between
-covariance matrices, standardised mean differences (SMD),
-variance ratios, propensity score MSE (pMSE), and confidence interval
-overlap. For \eqn{M > 1} releases, per-release statistics are
-computed and averaged.
+Computes five complementary utility measures quantifying how well plug-in
+sampling (PS) synthetic data preserve the statistical properties of the
+original confidential data. The reported headline measures are Frobenius
+distance, mean standardized mean difference, variance ratio range,
+propensity score MSE (pMSE) ratio, and mean confidence interval overlap.
+For \eqn{M > 1} releases, per-release statistics are computed and averaged
+where appropriate.
 }
 \details{
 \subsection{Frobenius distance}{
-Measures preservation of the multivariate covariance structure:
+The Frobenius distance measures covariance matrix preservation:
 \deqn{
-  d_F = \|\hat{\bm{\Sigma}}_X -
-  \bar{\hat{\bm{\Sigma}}}_V\|_F
-  = \sqrt{\sum_{j,k}(\hat\sigma_{jk} -
-  \bar{\hat\sigma}^{\star}_{jk})^2},
+  d_F =
+  \|\hat{\boldsymbol{\Sigma}}_X -
+  \bar{\hat{\boldsymbol{\Sigma}}}_V\|_F.
 }
-where \eqn{\bar{\hat{\bm{\Sigma}}}_V = M^{-1}\sum_{m=1}^M
-\hat{\bm{\Sigma}}_{V_m}} is the average per-release sample
-covariance. Smaller values indicate better covariance utility.
+For \eqn{M > 1}, \eqn{\bar{\hat{\boldsymbol{\Sigma}}}_V} is the
+average per-release sample covariance matrix.
 }
 
-\subsection{Standardised Mean Difference}{
-For each variable \eqn{j}:
+\subsection{Mean standardized mean difference}{
+The mean standardized mean difference is
 \deqn{
-  \mathrm{SMD}_j = \frac{|\bar{v}_j - \bar{x}_j|}{s_{x_j}},
+  \frac{1}{p}
+  \sum_{j=1}^p
+  \frac{|\bar{v}_j - \bar{x}_j|}{s_{x_j}}.
 }
-where \eqn{\bar{v}_j} is the mean of the pooled synthetic data and
-\eqn{s_{x_j}} is the original standard deviation. Values below 0.10
-indicate negligible difference; 0.10--0.20 is small; above 0.20
-warrants investigation.
+Values below 0.10 indicate negligible marginal mean differences.
 }
 
-\subsection{Variance ratio}{
-Per-variable ratio of average synthetic variance to original variance:
+\subsection{Variance ratio range}{
+The variance ratio range is
 \deqn{
-  \mathrm{VR}_j = \bar{s}^2_{v_j} / s^2_{x_j}.
+  \left[
+  \min_j \frac{s^2_{v_j}}{s^2_{x_j}},
+  \max_j \frac{s^2_{v_j}}{s^2_{x_j}}
+  \right].
 }
-Values near 1 indicate good variance preservation.
+Values close to 1 indicate good variance preservation.
 }
 
-\subsection{Propensity Score MSE (pMSE)}{
-Combines original (\eqn{n} rows, label 0) and synthetic (\eqn{Mn}
-rows, label 1) data, fits a logistic regression of the label on all
-\eqn{p} variables, and computes:
+\subsection{Propensity score MSE ratio}{
+The original data, labeled 0, and the synthetic data, labeled 1, are
+combined. A logistic classifier is fitted to distinguish original from
+synthetic records. The pMSE is
 \deqn{
-  \mathrm{pMSE} = \frac{1}{n + Mn}\sum_{i=1}^{n+Mn}
+  \mathrm{pMSE}
+  =
+  \frac{1}{n + Mn}
+  \sum_{i=1}^{n+Mn}
   (\hat{p}_i - c)^2,
-  \quad c = \frac{Mn}{n + Mn}.
+  \qquad
+  c = \frac{Mn}{n + Mn}.
 }
-The null value (expected under a correctly specified model) is
-\eqn{c(1-c)(p+1)/(n+Mn)}. The ratio
-\eqn{\mathrm{pMSE}/\mathrm{pMSE}_{\mathrm{null}}} should be near 1
-for high-utility synthetic data; large values indicate the synthetic
-data is easily distinguished from the original.
+The expected value under a correctly specified synthesis model is
+\deqn{
+  \mathrm{pMSE}_{\mathrm{null}}
+  =
+  \frac{c(1-c)(p+1)}{n+Mn}.
+}
+The pMSE ratio is
+\deqn{
+  \mathrm{pMSE}/\mathrm{pMSE}_{\mathrm{null}}.
+}
+Values near 1 indicate good utility, whereas values well below 1 indicate
+that the synthetic data blend in well with the original data.
 }
 
-\subsection{Confidence interval overlap}{
-For each variable \eqn{j}, compute the \eqn{(1-\alpha)} CI from
-the original and from the synthetic data, and measure their overlap
-(Karr et al., 2006):
+\subsection{Mean confidence interval overlap}{
+For each variable \eqn{j}, a \eqn{(1-\alpha)} confidence interval is
+computed from the original data and from the synthetic data. The overlap
+coefficient is
 \deqn{
-  J_j = \frac{\max(0,\; u^{V}_j - l^{X}_j,\;
-  u^{X}_j - l^{V}_j)}{\max(u^X_j - l^X_j,\; u^V_j - l^V_j)},
+  J_j =
+  \frac{
+  \max\left[
+  0,\;
+  \min(u^X_j, u^V_j) - \max(l^X_j, l^V_j)
+  \right]
+  }{
+  \max(u^X_j - l^X_j,\; u^V_j - l^V_j)
+  }.
 }
 where \eqn{[l^X_j, u^X_j]} and \eqn{[l^V_j, u^V_j]} are the CIs
-from original and synthetic data. Values near 1 indicate high
-inferential utility.
+from original and synthetic data. The reported measure is the average
+of \eqn{J_j} across all variables.
 }
 }
 \examples{
 data(brittany_soil_ps)
+
 set.seed(1)
 V3 <- simSynthData(brittany_soil_ps, M = 3)
+
 utility_measures(brittany_soil_ps, V3, M = 3)
 }
 \references{
-Karr, A. F., Kohnen, C. N., Oganian, A., Reiter, J. P. and
-Sanil, A. P. (2006). A framework for evaluating the utility of
-data altered to protect confidentiality.
-\emph{The American Statistician}, 60, 224--232.
+Karr, A. F., Kohnen, C. N., Oganian, A., Reiter, J. P., and
+Sanil, A. P. (2006). A framework for evaluating the utility of data
+altered to protect confidentiality. \emph{The American Statistician},
+\strong{60}, 224--232.
 
-Snoke, J., Raab, G. M., Nowok, B., Dibben, C. and Slavkovic, A.
+Snoke, J., Raab, G. M., Nowok, B., Dibben, C., and Slavkovic, A.
 (2018). General and specific utility measures for synthetic data.
 \emph{Journal of the Royal Statistical Society: Series A},
-181, 663--688.
+\strong{181}, 663--688.
 
-Woo, M.-J., Reiter, J. P., Oganian, A. and Karr, A. F. (2009).
+Woo, M.-J., Reiter, J. P., Oganian, A., and Karr, A. F. (2009).
 Global measures of data utility for microdata masked for disclosure
-limitation. \emph{Journal of Privacy and Confidentiality}, 1,
-111--124.
+limitation. \emph{Journal of Privacy and Confidentiality},
+\strong{1}, 111--124.
 }
 \seealso{
-\code{\link{simSynthData}}, \code{\link{ps_test}}
+\code{\link{simSynthData}},
+\code{\link{ps_test}}
 }

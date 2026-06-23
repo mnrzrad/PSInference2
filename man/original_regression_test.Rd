@@ -73,18 +73,24 @@ X <- brittany_soil_ps
 
 ## Test H0: Delta = 0 (default)
 original_regression_test(X,
-  response   = c("pH_water", "pH_KCl"),
-  predictors = c("log_CEC_Metson", "log_Organic_C",
-                 "log_Total_N", "log_P_Olsen"))
+  response = c("pH_water", "pH_KCl"),
+  predictors = c(
+    "log_CEC_Metson", "log_Organic_C",
+    "log_Total_N", "log_P_Olsen"
+  )
+)
 
 ## Test H0: Delta = Delta_hat (MLE) => F = 0, p = 1 by construction
-blk    <- partition(cov(X), part1 = c("pH_water", "pH_KCl"))
+blk <- partition(cov(X), part1 = c("pH_water", "pH_KCl"))
 Delta0 <- blk$B \%*\% solve(blk$D)
 original_regression_test(X,
-  response   = c("pH_water", "pH_KCl"),
-  predictors = c("log_CEC_Metson", "log_Organic_C",
-                 "log_Total_N", "log_P_Olsen"),
-  Delta0 = Delta0)
+  response = c("pH_water", "pH_KCl"),
+  predictors = c(
+    "log_CEC_Metson", "log_Organic_C",
+    "log_Total_N", "log_P_Olsen"
+  ),
+  Delta0 = Delta0
+)
 }
 \references{
 Anderson, T. W. (1984). \emph{An Introduction to Multivariate

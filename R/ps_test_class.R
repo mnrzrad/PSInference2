@@ -50,12 +50,11 @@ new_ps_test <- function(statistic,
                         n,
                         M,
                         p,
-                        conf.int   = NULL,
+                        conf.int = NULL,
                         sigma2.hat = NULL,
-                        Delta.hat  = NULL,
-                        lbl1       = NULL,
-                        lbl2       = NULL) {
-
+                        Delta.hat = NULL,
+                        lbl1 = NULL,
+                        lbl2 = NULL) {
   stopifnot(
     length(statistic) == 1L,
     is.numeric(statistic) || is.na(statistic),
@@ -124,7 +123,6 @@ new_ps_test <- function(statistic,
 #' print(res)
 #' }
 print.ps_test <- function(x, ...) {
-
   test_label <- .test_label(x$test)
   bar <- strrep("-", 56)
 
@@ -218,7 +216,6 @@ print.ps_test <- function(x, ...) {
 #' res <- sphericity_test(V, M = 3)
 #' summary(res)
 summary.ps_test <- function(object, ...) {
-
   print(object)
 
   nd <- object$null.dist
@@ -278,14 +275,13 @@ summary.ps_test <- function(object, ...) {
 #' V <- simSynthData(ps_attitude, M = 3)
 #' plot(sphericity_test(V, M = 3))
 plot.ps_test <- function(x,
-                         main      = NULL,
-                         shade_col = grDevices::adjustcolor("tomato",    0.45),
-                         dist_col  = grDevices::adjustcolor("steelblue", 0.22),
-                         stat_col  = "firebrick",
-                         crit_col  = "steelblue4",
+                         main = NULL,
+                         shade_col = grDevices::adjustcolor("tomato", 0.45),
+                         dist_col = grDevices::adjustcolor("steelblue", 0.22),
+                         stat_col = "firebrick",
+                         crit_col = "steelblue4",
                          ...) {
-
-  nd  <- x$null.dist
+  nd <- x$null.dist
   obs <- x$statistic
 
   ## Log10 scale for generalized variance and regression tests
@@ -310,7 +306,7 @@ plot.ps_test <- function(x,
 
     xlab_str <- expression(log[10](italic(T)^"*"))
   } else {
-    nd_plot  <- nd[is.finite(nd)]
+    nd_plot <- nd[is.finite(nd)]
     obs_plot <- obs
     xlab_str <- expression(italic(T)^"*")
   }
@@ -392,7 +388,7 @@ plot.ps_test <- function(x,
     }
   }
 
-  ann_obs  <- sprintf("Observed T* = %s", .fmt(obs_plot))
+  ann_obs <- sprintf("Observed T* = %s", .fmt(obs_plot))
   ann_pval <- sprintf(
     "p-value = %s",
     .ps_fmt_pvalue(x$p.value, x$iterations)
@@ -550,9 +546,9 @@ plot.ps_test <- function(x,
     )
   } else {
     ann <- list(
-      list(ann_obs,  stat_col, 2L),
-      list(ann_pval, "black",  1L),
-      list(ann_dec,  dec_col,  2L),
+      list(ann_obs, stat_col, 2L),
+      list(ann_pval, "black", 1L),
+      list(ann_dec, dec_col, 2L),
       list(ann_crit, crit_col, 1L)
     )
 
@@ -613,8 +609,7 @@ is.ps_test <- function(x) {
 #'
 #' @noRd
 .test_label <- function(test) {
-  switch(
-    test,
+  switch(test,
     gv           = "Generalized Variance Test",
     sphericity   = "Sphericity Test",
     independence = "Independence Test",
@@ -656,7 +651,6 @@ is.ps_test <- function(x) {
 #'
 #' @noRd
 .ps_fmt_pvalue <- function(pval, B = NULL) {
-
   if (is.na(pval) || !is.finite(pval)) {
     return("NA")
   }

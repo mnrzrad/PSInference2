@@ -42,12 +42,16 @@ where
 set.seed(1)
 
 \donttest{
-nd1 <- Inddist(part = 2, nsample = 50, pvariates = 4,
-               M = 1, iterations = 1000L)
+nd1 <- Inddist(
+  part = 2, nsample = 50, pvariates = 4,
+  M = 1, iterations = 1000L
+)
 stats::quantile(nd1, probs = 0.05)
 
-nd5 <- Inddist(part = 2, nsample = 50, pvariates = 4,
-               M = 5, iterations = 1000L)
+nd5 <- Inddist(
+  part = 2, nsample = 50, pvariates = 4,
+  M = 5, iterations = 1000L
+)
 stats::quantile(nd5, probs = 0.05)
 }
 }

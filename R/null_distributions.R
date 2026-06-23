@@ -68,7 +68,6 @@
 #' stats::quantile(nd5, probs = c(0.025, 0.975))
 #' }
 GVdist <- function(nsample, pvariates, iterations = 10000L, M = 1L) {
-
   args <- .validate_distribution_args(
     nsample = nsample,
     pvariates = pvariates,
@@ -139,7 +138,6 @@ GVdist <- function(nsample, pvariates, iterations = 10000L, M = 1L) {
 #' }
 #'
 Sphdist <- function(nsample, pvariates, iterations = 10000L, M = 1L) {
-
   args <- .validate_distribution_args(
     nsample = nsample,
     pvariates = pvariates,
@@ -212,18 +210,21 @@ Sphdist <- function(nsample, pvariates, iterations = 10000L, M = 1L) {
 #' set.seed(1)
 #'
 #' \donttest{
-#' nd1 <- Inddist(part = 2, nsample = 50, pvariates = 4,
-#'                M = 1, iterations = 1000L)
+#' nd1 <- Inddist(
+#'   part = 2, nsample = 50, pvariates = 4,
+#'   M = 1, iterations = 1000L
+#' )
 #' stats::quantile(nd1, probs = 0.05)
 #'
-#' nd5 <- Inddist(part = 2, nsample = 50, pvariates = 4,
-#'                M = 5, iterations = 1000L)
+#' nd5 <- Inddist(
+#'   part = 2, nsample = 50, pvariates = 4,
+#'   M = 5, iterations = 1000L
+#' )
 #' stats::quantile(nd5, probs = 0.05)
 #' }
 Inddist <- function(part, nsample, pvariates,
                     iterations = 10000L,
                     M = 1L) {
-
   args <- .validate_distribution_args(
     nsample = nsample,
     pvariates = pvariates,
@@ -302,12 +303,16 @@ Inddist <- function(part, nsample, pvariates,
 #' set.seed(1)
 #'
 #' \donttest{
-#' nd1 <- canodist(part = 2, nsample = 50, pvariates = 4,
-#'                 M = 1, iterations = 1000L)
+#' nd1 <- canodist(
+#'   part = 2, nsample = 50, pvariates = 4,
+#'   M = 1, iterations = 1000L
+#' )
 #' stats::quantile(nd1, probs = 0.95)
 #'
-#' nd5 <- canodist(part = 2, nsample = 50, pvariates = 4,
-#'                 M = 5, iterations = 1000L)
+#' nd5 <- canodist(
+#'   part = 2, nsample = 50, pvariates = 4,
+#'   M = 5, iterations = 1000L
+#' )
 #' stats::quantile(nd5, probs = 0.95)
 #' }
 
@@ -315,7 +320,6 @@ Inddist <- function(part, nsample, pvariates,
 canodist <- function(part, nsample, pvariates,
                      iterations = 10000L,
                      M = 1L) {
-
   args <- .validate_distribution_args(
     nsample = nsample,
     pvariates = pvariates,

@@ -59,43 +59,43 @@
 #' Sigma0 <- diag(ncol(X))
 #' original_gv_test(X, Sigma0 = Sigma0)
 original_gv_test <- function(X, Sigma0 = NULL, alpha = 0.05) {
+  X <- .validate_X(X)
+  n <- nrow(X)
+  p <- ncol(X)
 
-  X  <- .validate_X(X)
-  n  <- nrow(X)
-  p  <- ncol(X)
-
-  S_hat <- stats::cov(X)            # p x p sample covariance matrix
+  S_hat <- stats::cov(X) # p x p sample covariance matrix
 
   if (is.null(Sigma0)) Sigma0 <- S_hat
 
   Sigma0 <- as.matrix(Sigma0)
-  if (!isTRUE(all.equal(dim(Sigma0), c(p, p))))
+  if (!isTRUE(all.equal(dim(Sigma0), c(p, p)))) {
     stop(sprintf("'Sigma0' must be a %d x %d matrix.", p, p), call. = FALSE)
+  }
   .check_pd(Sigma0, "'Sigma0'")
 
-  det_S   <- det(S_hat)
-  det_S0  <- det(Sigma0)
+  det_S <- det(S_hat)
+  det_S0 <- det(Sigma0)
 
   # Bartlett-corrected LR statistic
   # (equals 0 when Sigma0 = S_hat, i.e., the plug-in MLE)
   correction <- (n - 1) - (2 * p^2 + p + 2) / (6 * p)
-  lambda_lr  <- det_S / det_S0         # ratio of determinants
-  chi2_stat  <- -correction * log(lambda_lr)
-  df         <- p * (p + 1L) / 2L - 1L
-  pval       <- stats::pchisq(chi2_stat, df = df, lower.tail = FALSE)
+  lambda_lr <- det_S / det_S0 # ratio of determinants
+  chi2_stat <- -correction * log(lambda_lr)
+  df <- p * (p + 1L) / 2L - 1L
+  pval <- stats::pchisq(chi2_stat, df = df, lower.tail = FALSE)
 
   dec <- if (pval < alpha) "Reject H0" else "Fail to Reject H0"
 
   structure(
     list(
-      statistic    = chi2_stat,
-      p.value      = pval,
-      df           = df,
+      statistic = chi2_stat,
+      p.value = pval,
+      df = df,
       det.Sigma.hat = det_S,
-      decision     = dec,
-      alpha        = alpha,
-      n            = n,
-      p            = p
+      decision = dec,
+      alpha = alpha,
+      n = n,
+      p = p
     ),
     class = "original_test"
   )
@@ -148,19 +148,18 @@ original_gv_test <- function(X, Sigma0 = NULL, alpha = 0.05) {
 #' data(brittany_soil_ps)
 #' original_sphericity_test(brittany_soil_ps)
 original_sphericity_test <- function(X, alpha = 0.05) {
-
-  X  <- .validate_X(X)
-  n  <- nrow(X)
-  p  <- ncol(X)
+  X <- .validate_X(X)
+  n <- nrow(X)
+  p <- ncol(X)
 
   S_hat <- stats::cov(X)
 
   sigma2_hat <- sum(diag(S_hat)) / p
-  W          <- det(S_hat) / sigma2_hat^p
+  W <- det(S_hat) / sigma2_hat^p
   correction <- (n - 1) - (2 * p^2 + p + 2) / (6 * p)
-  chi2_stat  <- -correction * log(W)
-  df         <- p * (p + 1L) / 2L - 1L
-  pval       <- stats::pchisq(chi2_stat, df = df, lower.tail = FALSE)
+  chi2_stat <- -correction * log(W)
+  df <- p * (p + 1L) / 2L - 1L
+  pval <- stats::pchisq(chi2_stat, df = df, lower.tail = FALSE)
 
   dec <- if (pval < alpha) "Reject H0" else "Fail to Reject H0"
 
@@ -226,36 +225,41 @@ original_sphericity_test <- function(X, alpha = 0.05) {
 #' data(brittany_soil_ps)
 #' original_independence_test(brittany_soil_ps,
 #'   group_a = c("pH_water", "pH_KCl"),
-#'   group_b = c("log_CEC_Metson", "log_Organic_C",
-#'               "log_Total_N", "log_P_Olsen"))
+#'   group_b = c(
+#'     "log_CEC_Metson", "log_Organic_C",
+#'     "log_Total_N", "log_P_Olsen"
+#'   )
+#' )
 original_independence_test <- function(X,
-                                       part    = NULL,
+                                       part = NULL,
                                        group_a = NULL,
                                        group_b = NULL,
-                                       alpha   = 0.05) {
+                                       alpha = 0.05) {
+  X <- .validate_X(X)
+  n <- nrow(X)
+  p <- ncol(X)
 
-  X  <- .validate_X(X)
-  n  <- nrow(X)
-  p  <- ncol(X)
-
-  res  <- .resolve_blocks(X, p, part, group_a, group_b,
-                          "original_independence_test")
-  X    <- res$V          # possibly reordered
-  p1   <- res$p1
-  p2   <- p - p1
+  res <- .resolve_blocks(
+    X, p, part, group_a, group_b,
+    "original_independence_test"
+  )
+  X <- res$V # possibly reordered
+  p1 <- res$p1
+  p2 <- p - p1
   lbl1 <- res$lbl1
   lbl2 <- res$lbl2
 
-  S_hat  <- stats::cov(X)
-  idx1   <- seq_len(p1);  idx2 <- seq_len(p2) + p1
-  S_11   <- S_hat[idx1, idx1, drop = FALSE]
-  S_22   <- S_hat[idx2, idx2, drop = FALSE]
+  S_hat <- stats::cov(X)
+  idx1 <- seq_len(p1)
+  idx2 <- seq_len(p2) + p1
+  S_11 <- S_hat[idx1, idx1, drop = FALSE]
+  S_22 <- S_hat[idx2, idx2, drop = FALSE]
 
-  Lambda     <- det(S_hat) / (det(S_11) * det(S_22))
+  Lambda <- det(S_hat) / (det(S_11) * det(S_22))
   correction <- (n - 1) - (p + 3) / 2
-  chi2_stat  <- -correction * log(Lambda)
-  df         <- p1 * p2
-  pval       <- stats::pchisq(chi2_stat, df = df, lower.tail = FALSE)
+  chi2_stat <- -correction * log(Lambda)
+  df <- p1 * p2
+  pval <- stats::pchisq(chi2_stat, df = df, lower.tail = FALSE)
 
   dec <- if (pval < alpha) "Reject H0" else "Fail to Reject H0"
 
@@ -348,76 +352,90 @@ original_independence_test <- function(X,
 #'
 #' ## Test H0: Delta = 0 (default)
 #' original_regression_test(X,
-#'   response   = c("pH_water", "pH_KCl"),
-#'   predictors = c("log_CEC_Metson", "log_Organic_C",
-#'                  "log_Total_N", "log_P_Olsen"))
+#'   response = c("pH_water", "pH_KCl"),
+#'   predictors = c(
+#'     "log_CEC_Metson", "log_Organic_C",
+#'     "log_Total_N", "log_P_Olsen"
+#'   )
+#' )
 #'
 #' ## Test H0: Delta = Delta_hat (MLE) => F = 0, p = 1 by construction
-#' blk    <- partition(cov(X), part1 = c("pH_water", "pH_KCl"))
+#' blk <- partition(cov(X), part1 = c("pH_water", "pH_KCl"))
 #' Delta0 <- blk$B %*% solve(blk$D)
 #' original_regression_test(X,
-#'   response   = c("pH_water", "pH_KCl"),
-#'   predictors = c("log_CEC_Metson", "log_Organic_C",
-#'                  "log_Total_N", "log_P_Olsen"),
-#'   Delta0 = Delta0)
+#'   response = c("pH_water", "pH_KCl"),
+#'   predictors = c(
+#'     "log_CEC_Metson", "log_Organic_C",
+#'     "log_Total_N", "log_P_Olsen"
+#'   ),
+#'   Delta0 = Delta0
+#' )
 original_regression_test <- function(X,
-                                     part       = NULL,
-                                     Delta0     = NULL,
-                                     response   = NULL,
+                                     part = NULL,
+                                     Delta0 = NULL,
+                                     response = NULL,
                                      predictors = NULL,
-                                     alpha      = 0.05) {
+                                     alpha = 0.05) {
+  X <- .validate_X(X)
+  n <- nrow(X)
+  p <- ncol(X)
+  nu <- n - 1L # Wishart degrees of freedom
 
-  X  <- .validate_X(X)
-  n  <- nrow(X)
-  p  <- ncol(X)
-  nu <- n - 1L                         # Wishart degrees of freedom
-
-  res  <- .resolve_blocks(X, p, part, response, predictors,
-                          "original_regression_test")
-  X    <- res$V
-  p1   <- res$p1
-  p2   <- p - p1
+  res <- .resolve_blocks(
+    X, p, part, response, predictors,
+    "original_regression_test"
+  )
+  X <- res$V
+  p1 <- res$p1
+  p2 <- p - p1
   lbl1 <- res$lbl1
   lbl2 <- res$lbl2
 
-  if (p1 > p2)
-    stop(sprintf(
-      "Regression test requires p1 <= p2. Got p1 = %d, p2 = %d.", p1, p2),
-      call. = FALSE)
+  if (p1 > p2) {
+    stop(
+      sprintf(
+        "Regression test requires p1 <= p2. Got p1 = %d, p2 = %d.", p1, p2
+      ),
+      call. = FALSE
+    )
+  }
 
   if (is.null(Delta0)) {
     Delta0 <- matrix(0.0, nrow = p1, ncol = p2)
   } else {
     Delta0 <- as.matrix(Delta0)
-    if (!isTRUE(all.equal(dim(Delta0), c(p1, p2))))
+    if (!isTRUE(all.equal(dim(Delta0), c(p1, p2)))) {
       stop(sprintf("'Delta0' must be a %d x %d matrix.", p1, p2),
-           call. = FALSE)
+        call. = FALSE
+      )
+    }
   }
 
-  idx1 <- seq_len(p1);  idx2 <- seq_len(p2) + p1
-  S_hat    <- stats::cov(X)
-  S_11     <- S_hat[idx1, idx1, drop = FALSE]
-  S_12     <- S_hat[idx1, idx2, drop = FALSE]
-  S_22     <- S_hat[idx2, idx2, drop = FALSE]
-  S22_inv  <- solve(S_22)
+  idx1 <- seq_len(p1)
+  idx2 <- seq_len(p2) + p1
+  S_hat <- stats::cov(X)
+  S_11 <- S_hat[idx1, idx1, drop = FALSE]
+  S_12 <- S_hat[idx1, idx2, drop = FALSE]
+  S_22 <- S_hat[idx2, idx2, drop = FALSE]
+  S22_inv <- solve(S_22)
   Delta_hat <- S_12 %*% S22_inv
 
   # Residual Schur complement under H0: Delta = Delta0
-  diff       <- Delta_hat - Delta0
-  S_11_2_H0  <- S_11 - diff %*% S_22 %*% t(diff)
+  diff <- Delta_hat - Delta0
+  S_11_2_H0 <- S_11 - diff %*% S_22 %*% t(diff)
 
   # Wilks Lambda
   Lambda <- det(S_11_2_H0) / det(S_11)
 
   # Rao F-approximation
-  fp  <- .wilks_f_params(p1, p2, nu)
-  s   <- fp$s
+  fp <- .wilks_f_params(p1, p2, nu)
+  s <- fp$s
   df1 <- fp$df1
   df2 <- fp$df2
 
   Lam_s <- Lambda^(1.0 / s)
   F_stat <- ((1 - Lam_s) / Lam_s) * (df2 / df1)
-  pval   <- stats::pf(F_stat, df1 = df1, df2 = df2, lower.tail = FALSE)
+  pval <- stats::pf(F_stat, df1 = df1, df2 = df2, lower.tail = FALSE)
 
   dec <- if (pval < alpha) "Reject H0" else "Fail to Reject H0"
 
@@ -476,7 +494,7 @@ print.original_test <- function(x, ...) {
 
   if (!is.null(x$df)) {
     cat(sprintf("  Test statistic (chi2) : %.4g\n", x$statistic))
-    cat(sprintf("  df                    : %d\n",   x$df))
+    cat(sprintf("  df                    : %d\n", x$df))
   } else {
     cat(sprintf("  Test statistic (F)    : %.4g\n", x$statistic))
     cat(sprintf("  df1 / df2             : %d / %.1f\n", x$df1, x$df2))
@@ -489,18 +507,21 @@ print.original_test <- function(x, ...) {
   }
   cat(sprintf("  p-value               : %s\n", pval_str))
   cat(sprintf("  alpha                 : %.2f\n", x$alpha))
-  cat(sprintf("  Decision              : %s\n",   x$decision))
+  cat(sprintf("  Decision              : %s\n", x$decision))
 
-  if (!is.null(x$sigma2.hat))
+  if (!is.null(x$sigma2.hat)) {
     cat(sprintf("  sigma2_hat            : %.4f\n", x$sigma2.hat))
-  if (!is.null(x$det.Sigma.hat))
+  }
+  if (!is.null(x$det.Sigma.hat)) {
     cat(sprintf("  |Sigma_hat|           : %.4e\n", x$det.Sigma.hat))
+  }
   if (!is.null(x$Delta.hat)) {
     cat("  Delta_hat (plug-in slope):\n")
     print(round(x$Delta.hat, 4))
   }
-  if (!is.null(x$lbl1) && !is.null(x$lbl2))
+  if (!is.null(x$lbl1) && !is.null(x$lbl2)) {
     cat(sprintf("  Blocks: {%s}  vs  {%s}\n", x$lbl1, x$lbl2))
+  }
 
   cat(bar, "\n\n")
   invisible(x)

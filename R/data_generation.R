@@ -85,7 +85,6 @@
 #' dim(V5)
 #'
 simSynthData <- function(X, M = 1L) {
-
   X <- .validate_X(X)
   M <- .validate_M(M)
 

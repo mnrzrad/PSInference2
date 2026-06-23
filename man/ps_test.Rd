@@ -13,67 +13,80 @@ ps_test(
 )
 }
 \arguments{
-\item{V}{Stacked synthetic dataset (\eqn{Mn \times p} matrix), as
-returned by \code{\link{simSynthData}}.}
+\item{V}{Stacked synthetic data set, given as an \eqn{Mn \times p}
+numeric matrix, as returned by \code{\link{simSynthData}}.}
 
-\item{M}{Positive integer. Number of synthetic releases
-(default \code{1L}). Setting \code{M = 1} recovers the
+\item{M}{Positive integer giving the number of synthetic releases. The
+default is \code{1L}. Setting \code{M = 1} recovers the
 single-release procedures of Klein et al. (2021).}
 
 \item{test}{Character string specifying the test. One of
-\code{"gv"} (generalised variance),
-\code{"sphericity"},
-\code{"independence"},
-\code{"regression"}.}
+\code{"gv"} for generalized variance, \code{"sphericity"},
+\code{"independence"}, or \code{"regression"}.}
 
-\item{plot}{Logical. If \code{TRUE}, calls \code{plot()} on the
-result before returning it, so the null distribution diagnostic
-is displayed automatically. Default \code{FALSE}.}
+\item{plot}{Logical. If \code{TRUE}, \code{plot()} is called on the
+result before it is returned, so the null-distribution diagnostic is
+displayed automatically. The default is \code{FALSE}.}
 
 \item{...}{Additional arguments passed to the corresponding test
 function or, when \code{plot = TRUE}, to \code{plot.ps_test()}.
-Arguments intended for the test function (e.g. \code{part},
-\code{Sigma}, \code{Delta0}, \code{iterations}) and graphical
-arguments (e.g. \code{main}, \code{shade_col}) are separated
+Arguments intended for the test function, such as \code{part},
+\code{Sigma}, \code{Delta0}, \code{alpha}, or \code{iterations}, and
+graphical arguments, such as \code{main}, \code{shade_col},
+\code{dist_col}, \code{stat_col}, and \code{crit_col}, are separated
 automatically.}
 }
 \value{
-An object of class \code{\link{ps_test}}, invisibly when
-  \code{plot = TRUE}.
+An object of class \code{\link{ps_test-class}}, invisibly when
+\code{plot = TRUE}.
 }
 \description{
-Dispatches to the appropriate exact inferential procedure based on
-the \code{test} argument, and optionally produces the diagnostic
-plot immediately. This is the main entry point for users who prefer
-a single function over the four individual test functions.
+Dispatches to the appropriate exact inferential procedure based on the
+\code{test} argument and can optionally produce the diagnostic plot
+immediately. This is the main entry point for users who prefer a single
+function instead of calling the four individual test functions directly.
 }
 \examples{
-data(ps_attitude)
-set.seed(1)
-V <- simSynthData(ps_attitude, M = 3)
+data(attitude)
 
+set.seed(1)
+V <- simSynthData(attitude, M = 3)
+
+\donttest{
 # Run and print only
-ps_test(V, M = 3, test = "sphericity")
+ps_test(V, M = 3, test = "sphericity", iterations = 1000L)
 
 # Run and plot in one call
-ps_test(V, M = 3, test = "sphericity", plot = TRUE)
+ps_test(V,
+  M = 3, test = "sphericity",
+  iterations = 1000L, plot = TRUE
+)
 
-# Independence with named blocks, plot automatically
-ps_test(V, M = 3, test = "independence",
-        group_a = c("rating", "complaints"),
-        group_b = c("privileges", "learning"),
-        plot = TRUE)
+# Independence with named blocks
+ps_test(
+  V,
+  M = 3,
+  test = "independence",
+  group_a = c("rating", "complaints"),
+  group_b = c("privileges", "learning"),
+  iterations = 1000L,
+  plot = TRUE
+)
 
-# Generalised variance with reference covariance
-ps_test(V, M = 3, test = "gv",
-        Sigma = cov(ps_attitude), plot = TRUE)
-
-# M = 1 recovers Klein et al. (2021)
-ps_test(simSynthData(ps_attitude), M = 1,
-        test = "sphericity", plot = TRUE)
+# Generalized variance with a reference covariance matrix
+ps_test(
+  V,
+  M = 3,
+  test = "gv",
+  Sigma = cov(attitude),
+  iterations = 1000L,
+  plot = TRUE
+)
+}
 }
 \seealso{
-\code{\link{gv_test}}, \code{\link{sphericity_test}},
-  \code{\link{independence_test}}, \code{\link{regression_test}},
-  \code{\link{plot.ps_test}}
+\code{\link{gv_test}},
+\code{\link{sphericity_test}},
+\code{\link{independence_test}},
+\code{\link{regression_test}}
 }

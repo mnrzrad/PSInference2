@@ -45,15 +45,19 @@ set.seed(1)
 V1 <- simSynthData(attitude)
 
 \donttest{
-res <- gv_test(V1, M = 1, Sigma = cov(attitude),
-               iterations = 1000L)
+res <- gv_test(V1,
+  M = 1, Sigma = cov(attitude),
+  iterations = 1000L
+)
 print(res)
 plot(res)
 
 set.seed(1)
 V5 <- simSynthData(attitude, M = 5)
-res5<-gv_test(V5, M = 5, Sigma = cov(attitude),
-        iterations = 1000L)
+res5 <- gv_test(V5,
+  M = 5, Sigma = cov(attitude),
+  iterations = 1000L
+)
 
 print(res5)
 plot(res5)

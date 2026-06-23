@@ -6,7 +6,6 @@
 #'
 #' @noRd
 .validate_X <- function(X, name = "X") {
-
   if (is.data.frame(X)) {
     non_numeric <- !vapply(X, is.numeric, logical(1L))
 
@@ -80,7 +79,6 @@
 #'
 #' @noRd
 .validate_M <- function(M) {
-
   if (length(M) != 1L || !is.numeric(M) || !is.finite(M)) {
     stop("'M' must be a single positive integer.", call. = FALSE)
   }
@@ -97,7 +95,6 @@
 #'
 #' @noRd
 .validate_part <- function(part, p) {
-
   if (length(part) != 1L || !is.numeric(part) || !is.finite(part)) {
     stop("'part' must be a single integer.", call. = FALSE)
   }
@@ -126,7 +123,6 @@
 #'
 #' @noRd
 .check_pd <- function(A, name = "matrix") {
-
   if (!is.matrix(A) || nrow(A) != ncol(A)) {
     stop(
       sprintf("The %s must be a square matrix.", name),
@@ -152,7 +148,6 @@
 #'
 #' @noRd
 .check_N <- function(N, p) {
-
   if (N <= p + 1L) {
     stop(
       sprintf(
@@ -174,7 +169,6 @@
 #'
 #' @noRd
 .compute_S_star <- function(V) {
-
   V <- as.matrix(V)
   Vc <- sweep(V, 2L, colMeans(V), "-")
 
@@ -190,12 +184,10 @@
 #'
 #' @noRd
 .resolve_blocks <- function(V, p, part, group_a, group_b, fun_name) {
-
   cn <- colnames(V)
 
   ## Integer interface: first part columns versus remaining columns
   if (!is.null(part) && is.null(group_a) && is.null(group_b)) {
-
     p1 <- .validate_part(part, p)
 
     idx1 <- seq_len(p1)
@@ -225,9 +217,7 @@
 
   ## Named or indexed interface
   if (!is.null(group_a) && !is.null(group_b)) {
-
     .to_idx <- function(g, which_arg) {
-
       if (length(g) < 1L) {
         stop(
           sprintf("'%s' must contain at least one variable.", which_arg),
@@ -236,7 +226,6 @@
       }
 
       if (is.character(g)) {
-
         if (is.null(cn)) {
           stop(
             sprintf(
@@ -261,9 +250,7 @@
         }
 
         match(g, cn)
-
       } else if (is.numeric(g)) {
-
         if (any(!is.finite(g)) || any(g != floor(g))) {
           stop(
             sprintf("'%s' must contain integer column indices.", which_arg),
@@ -284,7 +271,6 @@
         }
 
         g
-
       } else {
         stop(
           sprintf(
@@ -366,7 +352,6 @@
 #'
 #' @noRd
 .validate_alpha <- function(alpha) {
-
   if (length(alpha) != 1L || !is.numeric(alpha) || !is.finite(alpha)) {
     stop("'alpha' must be a single number in (0, 1).", call. = FALSE)
   }
@@ -382,11 +367,10 @@
 #'
 #' @noRd
 .validate_iterations <- function(iterations) {
-
   if (
     length(iterations) != 1L ||
-    !is.numeric(iterations) ||
-    !is.finite(iterations)
+      !is.numeric(iterations) ||
+      !is.finite(iterations)
   ) {
     stop("'iterations' must be a single positive integer.", call. = FALSE)
   }
@@ -403,7 +387,6 @@
 #'
 #' @noRd
 .validate_null_dist <- function(null_dist) {
-
   if (!is.numeric(null_dist) || length(null_dist) < 1L) {
     stop("'null_dist' must be a non-empty numeric vector.", call. = FALSE)
   }
@@ -423,7 +406,6 @@
 #'
 #' @noRd
 .resolve_ps_dimensions <- function(V, M) {
-
   N <- nrow(V)
   p <- ncol(V)
 
@@ -468,7 +450,6 @@
 #'
 #' @noRd
 .validate_positive_integer <- function(x, name, min_value = 1L) {
-
   if (length(x) != 1L || !is.numeric(x) || !is.finite(x)) {
     stop(
       sprintf("'%s' must be a single positive integer.", name),
@@ -491,7 +472,6 @@
 #'
 #' @noRd
 .validate_distribution_args <- function(nsample, pvariates, iterations, M) {
-
   n <- .validate_positive_integer(nsample, "nsample", min_value = 2L)
   p <- .validate_positive_integer(pvariates, "pvariates", min_value = 1L)
   it <- .validate_positive_integer(iterations, "iterations", min_value = 1L)
@@ -515,7 +495,6 @@
 #'
 #' @noRd
 .validate_distribution_part <- function(part, p, require_p1_le_p2 = FALSE) {
-
   p1 <- .validate_positive_integer(part, "part", min_value = 1L)
 
   if (p1 >= p) {
@@ -539,8 +518,129 @@
   # nu = n - 1 (original-data Wishart df)
   # s  = sqrt((p1^2 * p2^2 - 4) / (p1^2 + p2^2 - 5))  [= p2 if p1=1, p1 if p2=1]
   denom2 <- p1^2 + p2^2 - 5
-  s  <- if (denom2 > 0) sqrt((p1^2 * p2^2 - 4) / denom2) else 1.0
+  s <- if (denom2 > 0) sqrt((p1^2 * p2^2 - 4) / denom2) else 1.0
   df1 <- p1 * p2
   df2 <- s * (nu - (p1 + p2 + 1) / 2) - (p1 * p2 - 2) / 2 - 1
   list(s = s, df1 = df1, df2 = df2)
+}
+
+#' Validate a significance level for utility measures.
+#'
+#' @param alpha Numeric significance level.
+#'
+#' @return A numeric scalar.
+#'
+#' @noRd
+.validate_alpha_utility <- function(alpha) {
+  if (
+    !is.numeric(alpha) ||
+    length(alpha) != 1L ||
+    is.na(alpha) ||
+    !is.finite(alpha) ||
+    alpha <= 0 ||
+    alpha >= 1
+  ) {
+    stop(
+      "'alpha' must be a single numeric value in the interval (0, 1).",
+      call. = FALSE
+    )
+  }
+
+  alpha
+}
+
+
+#' Flag mean standardized mean difference.
+#'
+#' @param x Numeric mean SMD.
+#'
+#' @return A character string.
+#'
+#' @noRd
+.ps_utility_flag_smd <- function(x) {
+  if (is.na(x) || !is.finite(x)) {
+    return("")
+  }
+
+  if (x > 0.20) {
+    return("**")
+  }
+
+  if (x > 0.10) {
+    return("*")
+  }
+
+  ""
+}
+
+#' Flag variance ratio range.
+#'
+#' @param x Numeric vector of length two with minimum and maximum variance
+#'   ratios.
+#'
+#' @return A character string.
+#'
+#' @noRd
+.ps_utility_flag_vr <- function(x) {
+  if (length(x) != 2L || any(is.na(x)) || any(!is.finite(x))) {
+    return("")
+  }
+
+  if (x["min"] < 0.80 || x["max"] > 1.20) {
+    return("**")
+  }
+
+  if (x["min"] < 0.90 || x["max"] > 1.10) {
+    return("*")
+  }
+
+  ""
+}
+
+
+#' Flag pMSE ratio.
+#'
+#' @param x Numeric pMSE ratio.
+#'
+#' @return A character string.
+#'
+#' @noRd
+.ps_utility_flag_pmse <- function(x) {
+  if (is.na(x) || !is.finite(x)) {
+    return("")
+  }
+
+  if (x > 2.00) {
+    return("**")
+  }
+
+  if (x > 1.50) {
+    return("*")
+  }
+
+  ""
+}
+
+
+#' Flag mean confidence interval overlap.
+#'
+#' @param x Numeric mean confidence interval overlap.
+#'
+#' @return A character string.
+#'
+#' @noRd
+.ps_utility_flag_ci <- function(x) {
+  if (is.na(x) || !is.finite(x)) {
+    return("")
+  }
+
+  if (x < 0.70) {
+    return("**")
+  }
+
+  if (x < 0.90) {
+    return("*")
+  }
+
+  ""
 }

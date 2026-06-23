@@ -52,8 +52,11 @@ of freedom.
 data(brittany_soil_ps)
 original_independence_test(brittany_soil_ps,
   group_a = c("pH_water", "pH_KCl"),
-  group_b = c("log_CEC_Metson", "log_Organic_C",
-              "log_Total_N", "log_P_Olsen"))
+  group_b = c(
+    "log_CEC_Metson", "log_Organic_C",
+    "log_Total_N", "log_P_Olsen"
+  )
+)
 }
 \references{
 Anderson, T. W. (1984). \emph{An Introduction to Multivariate

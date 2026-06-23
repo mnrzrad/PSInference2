@@ -30,9 +30,9 @@ print(mvn_result)
 
 ## ----gen_synth----------------------------------------------------------------
 set.seed(2026)
-X  <- brittany_soil_ps
-n  <- nrow(X)   # 37
-p  <- ncol(X)   # 6
+X <- brittany_soil_ps
+n <- nrow(X) # 37
+p <- ncol(X) # 6
 
 # M = 1: single release
 V1 <- simSynthData(X)
@@ -64,57 +64,77 @@ plot(sph3, main = "Sphericity  (M = 3)")
 par(op)
 
 ## ----sph_print----------------------------------------------------------------
-cat("M = 1: stat =", round(sph1$statistic, 4),
-    "| p =", sph1$p.value, "|", sph1$decision, "\n")
-cat("M = 3: stat =", round(sph3$statistic, 4),
-    "| p =", sph3$p.value, "|", sph3$decision, "\n")
+cat(
+  "M = 1: stat =", round(sph1$statistic, 4),
+  "| p =", sph1$p.value, "|", sph1$decision, "\n"
+)
+cat(
+  "M = 3: stat =", round(sph3$statistic, 4),
+  "| p =", sph3$p.value, "|", sph3$decision, "\n"
+)
 
 ## ----ind, fig.cap = "Independence null distribution for M = 1 (left) and M = 3 (right). Rejection is clear in both cases; the critical value moves right as M increases.", fig.height = 6.5, fig.width = 10----
 op <- par(mfrow = c(1, 2))
-ind1 <- independence_test(V1, M = 1,
-          group_a = c("pH_water", "pH_KCl", "log_CEC_Metson"),
-          group_b = c("log_Organic_C", "log_Total_N", "log_P_Olsen"),
-          iterations = 5000)
+ind1 <- independence_test(V1,
+  M = 1,
+  group_a = c("pH_water", "pH_KCl", "log_CEC_Metson"),
+  group_b = c("log_Organic_C", "log_Total_N", "log_P_Olsen"),
+  iterations = 5000
+)
 plot(ind1, main = "Independence  (M = 1)")
-ind3 <- independence_test(V3, M = 3,
-          group_a = c("pH_water", "pH_KCl", "log_CEC_Metson"),
-          group_b = c("log_Organic_C", "log_Total_N", "log_P_Olsen"),
-          iterations = 5000)
+ind3 <- independence_test(V3,
+  M = 3,
+  group_a = c("pH_water", "pH_KCl", "log_CEC_Metson"),
+  group_b = c("log_Organic_C", "log_Total_N", "log_P_Olsen"),
+  iterations = 5000
+)
 plot(ind3, main = "Independence  (M = 3)")
 par(op)
 
 ## ----ind_print----------------------------------------------------------------
-cat("M = 1: stat =", round(ind1$statistic, 4),
-    "| p =", ind1$p.value, "|", ind1$decision, "\n")
-cat("M = 3: stat =", round(ind3$statistic, 4),
-    "| p =", ind3$p.value, "|", ind3$decision, "\n")
+cat(
+  "M = 1: stat =", round(ind1$statistic, 4),
+  "| p =", ind1$p.value, "|", ind1$decision, "\n"
+)
+cat(
+  "M = 3: stat =", round(ind3$statistic, 4),
+  "| p =", ind3$p.value, "|", ind3$decision, "\n"
+)
 
 ## ----reg, fig.cap = "Regression null distribution (log10 scale) for M = 1 (left) and M = 3 (right). Both reject the zero-regression null.", fig.height = 6.5, fig.width = 10----
 op <- par(mfrow = c(1, 2))
-reg1 <- regression_test(V1, M = 1,
-          response   = c("pH_water", "pH_KCl", "log_CEC_Metson"),
-          predictors = c("log_Organic_C", "log_Total_N", "log_P_Olsen"),
-          Delta0     = matrix(0, 3, 3),
-          iterations = 5000)
+reg1 <- regression_test(V1,
+  M = 1,
+  response = c("pH_water", "pH_KCl", "log_CEC_Metson"),
+  predictors = c("log_Organic_C", "log_Total_N", "log_P_Olsen"),
+  Delta0 = matrix(0, 3, 3),
+  iterations = 5000
+)
 plot(reg1, main = "Regression  (M = 1)")
-reg3 <- regression_test(V3, M = 3,
-          response   = c("pH_water", "pH_KCl", "log_CEC_Metson"),
-          predictors = c("log_Organic_C", "log_Total_N", "log_P_Olsen"),
-          Delta0     = matrix(0, 3, 3),
-          iterations = 5000)
+reg3 <- regression_test(V3,
+  M = 3,
+  response = c("pH_water", "pH_KCl", "log_CEC_Metson"),
+  predictors = c("log_Organic_C", "log_Total_N", "log_P_Olsen"),
+  Delta0 = matrix(0, 3, 3),
+  iterations = 5000
+)
 plot(reg3, main = "Regression  (M = 3)")
 par(op)
 
 ## ----reg_print----------------------------------------------------------------
-cat("M = 1: stat =", round(reg1$statistic, 5),
-    "| p =", reg1$p.value, "|", reg1$decision, "\n")
-cat("M = 3: stat =", round(reg3$statistic, 5),
-    "| p =", reg3$p.value, "|", reg3$decision, "\n")
+cat(
+  "M = 1: stat =", round(reg1$statistic, 5),
+  "| p =", reg1$p.value, "|", reg1$decision, "\n"
+)
+cat(
+  "M = 3: stat =", round(reg3$statistic, 5),
+  "| p =", reg3$p.value, "|", reg3$decision, "\n"
+)
 
 ## ----M_effect, fig.cap = "Sphericity null distribution for M = 1, 2, 3, 5. The distribution concentrates as M grows, lowering the critical value and strengthening evidence against the false null.", fig.height = 7, fig.width = 9----
 op <- par(mfrow = c(2, 2))
 for (m in c(1L, 2L, 3L, 5L)) {
-  Vm  <- simSynthData(X, M = m)
+  Vm <- simSynthData(X, M = m)
   res <- sphericity_test(Vm, M = m, iterations = 2000)
   plot(res, main = sprintf("Sphericity: M = %d  (N = %d)", m, m * n))
 }
@@ -124,17 +144,21 @@ par(op)
 # Numerical summary across M
 results <- lapply(c(1L, 2L, 3L, 5L), function(m) {
   Vm <- simSynthData(X, M = m)
-  s  <- sphericity_test(Vm, M = m, iterations = 3000)
-  i  <- independence_test(Vm, M = m,
-          group_a = c("pH_water","pH_KCl","log_CEC_Metson"),
-          group_b = c("log_Organic_C","log_Total_N","log_P_Olsen"),
-          iterations = 3000)
-  data.frame(M       = m,
-             N       = m * n,
-             sph_stat = round(s$statistic, 5),
-             sph_pval = round(s$p.value, 5),
-             ind_stat = round(i$statistic, 5),
-             ind_pval = round(i$p.value, 5))
+  s <- sphericity_test(Vm, M = m, iterations = 3000)
+  i <- independence_test(Vm,
+    M = m,
+    group_a = c("pH_water", "pH_KCl", "log_CEC_Metson"),
+    group_b = c("log_Organic_C", "log_Total_N", "log_P_Olsen"),
+    iterations = 3000
+  )
+  data.frame(
+    M = m,
+    N = m * n,
+    sph_stat = round(s$statistic, 5),
+    sph_pval = round(s$p.value, 5),
+    ind_stat = round(i$statistic, 5),
+    ind_pval = round(i$p.value, 5)
+  )
 })
 do.call(rbind, results)
 

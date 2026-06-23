@@ -9,8 +9,12 @@
 \arguments{
 \item{x}{An object of class \code{ps_utility}.}
 
-\item{...}{Further arguments (ignored).}
+\item{...}{Further arguments, currently ignored.}
+}
+\value{
+Invisibly returns \code{x}.
 }
 \description{
-Print Method for \code{ps_utility} Objects
+Prints a formatted summary of the five headline utility measures returned
+by \code{\link{utility_measures}}.
 }

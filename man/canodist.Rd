@@ -40,12 +40,16 @@ The simulation uses the same compound Wishart structure as
 set.seed(1)
 
 \donttest{
-nd1 <- canodist(part = 2, nsample = 50, pvariates = 4,
-                M = 1, iterations = 1000L)
+nd1 <- canodist(
+  part = 2, nsample = 50, pvariates = 4,
+  M = 1, iterations = 1000L
+)
 stats::quantile(nd1, probs = 0.95)
 
-nd5 <- canodist(part = 2, nsample = 50, pvariates = 4,
-                M = 5, iterations = 1000L)
+nd5 <- canodist(
+  part = 2, nsample = 50, pvariates = 4,
+  M = 5, iterations = 1000L
+)
 stats::quantile(nd5, probs = 0.95)
 }
 canodist(part = 2, nsample = 50, pvariates = 4, M = 5) |> quantile(0.95)

@@ -7,68 +7,90 @@
 partition(Matrix, nrows = NULL, ncols = NULL, part1 = NULL, part2 = NULL)
 }
 \arguments{
-\item{Matrix}{A numeric matrix. Must have dimnames when using the name
-interface.}
+\item{Matrix}{A numeric matrix. When using the name interface, it must
+be a square matrix with matching row and column names.}
 
-\item{nrows}{Integer; number of part1 rows. Ignored when \code{part1}
-is supplied.}
+\item{nrows}{Integer giving the number of rows in the first row block.
+Ignored when \code{part1} is supplied.}
 
-\item{ncols}{Integer; number of part1 columns. Ignored when \code{part1}
-is supplied.}
+\item{ncols}{Integer giving the number of columns in the first column
+block. Ignored when \code{part1} is supplied.}
 
-\item{part1}{Character vector of variable names forming the first group.
-Used for both row and column reordering of a square matrix.}
+\item{part1}{Character vector of names forming the first group. Used
+for both row and column reordering in the name interface.}
 
 \item{part2}{Optional character vector naming the second group. If
-supplied it is checked to equal the complement of \code{part1}.}
+supplied, it is checked against the complement of \code{part1}.}
 }
 \value{
-A named list of class \code{"ps_partition"} with elements
-  \code{A}, \code{B}, \code{C}, \code{D}.
-  Numeric indexing \code{[[1]]}--\code{[[4]]} also works.
+A named list of class \code{"ps_partition"} with elements \code{A},
+\code{B}, \code{C}, and \code{D}. Numeric indexing with
+\code{[[1]]} through \code{[[4]]} also works.
 }
 \description{
-Splits a numeric matrix \eqn{\mathbf{M}} into four sub-matrices according
+Splits a numeric matrix \eqn{\mathbf{M}} into four submatrices according
 to a two-group partition of its rows and columns:
-\deqn{\mathbf{M} = \begin{bmatrix} \mathbf{A} & \mathbf{B} \\
-                                    \mathbf{C} & \mathbf{D} \end{bmatrix}}
-where
-\describe{
-  \item{\eqn{\mathbf{A}}}{part1 \eqn{\times} part1}
-  \item{\eqn{\mathbf{B}}}{part1 \eqn{\times} part2}
-  \item{\eqn{\mathbf{C}}}{part2 \eqn{\times} part1}
-  \item{\eqn{\mathbf{D}}}{part2 \eqn{\times} part2}
+\deqn{
+  \mathbf{M}
+  =
+  \begin{bmatrix}
+  \mathbf{A} & \mathbf{B} \\
+  \mathbf{C} & \mathbf{D}
+  \end{bmatrix}.
 }
-}
-\details{
-\strong{Two interfaces:}
+
+The blocks are:
 \describe{
-  \item{Integer interface (original)}{Supply \code{nrows} and \code{ncols}.
-    The first \code{nrows} rows and \code{ncols} columns form part1;
-    the rest form part2.}
-  \item{Name interface}{Supply \code{part1} as a character vector of
-    row/column names. The matrix is reordered so that \code{part1} rows
-    and columns appear first. \code{part2} is optional; if supplied it
-    is validated as the complement of \code{part1}.}
+  \item{\eqn{\mathbf{A}}}{Rows in the first group and columns in the
+    first group.}
+  \item{\eqn{\mathbf{B}}}{Rows in the first group and columns in the
+    second group.}
+  \item{\eqn{\mathbf{C}}}{Rows in the second group and columns in the
+    first group.}
+  \item{\eqn{\mathbf{D}}}{Rows in the second group and columns in the
+    second group.}
+}
+
+Two interfaces are available:
+\describe{
+  \item{Integer interface}{
+    Supply \code{nrows} and \code{ncols}. The first \code{nrows} rows
+    and the first \code{ncols} columns form the first block.
+  }
+  \item{Name interface}{
+    Supply \code{part1} as a character vector of row and column names.
+    This interface is intended for square matrices, such as covariance
+    or correlation matrices. The matrix is reordered so that the
+    \code{part1} rows and columns appear first. The optional
+    \code{part2} argument is checked against the complement of
+    \code{part1}.
+  }
 }
 }
 \examples{
-## Integer interface
-M <- matrix(1:16, 4, 4,
-            dimnames = list(c("A","B","C","D"), c("A","B","C","D")))
+M <- matrix(
+  1:16,
+  4,
+  4,
+  dimnames = list(c("A", "B", "C", "D"), c("A", "B", "C", "D"))
+)
+
+# Integer interface
 b <- partition(M, nrows = 2, ncols = 2)
-b$A   # rows A,B x cols A,B
+b$A
 
-## Name interface
-b2 <- partition(M, part1 = c("A","B"))
-b2$A  # rows A,B x cols A,B  (part1 x part1)
-b2$D  # rows C,D x cols C,D  (part2 x part2)
+# Name interface
+b2 <- partition(M, part1 = c("A", "B"))
+b2$A
+b2$D
 
-## Covariance matrix of ps_attitude
-data(ps_attitude)
-b3 <- partition(cov(ps_attitude),
-                part1 = c("rating", "complaints"),
-                part2 = c("privileges", "learning"))
-b3$A  # 2x2: rating, complaints
-b3$D  # 2x2: privileges, learning
+# Covariance matrix example
+data(attitude)
+b3 <- partition(
+  cov(attitude),
+  part1 = c("rating", "complaints"),
+  part2 = c("privileges", "learning")
+)
+b3$A
+b3$D
 }

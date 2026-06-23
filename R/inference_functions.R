@@ -46,15 +46,19 @@
 #' V1 <- simSynthData(attitude)
 #'
 #' \donttest{
-#' res <- gv_test(V1, M = 1, Sigma = cov(attitude),
-#'                iterations = 1000L)
+#' res <- gv_test(V1,
+#'   M = 1, Sigma = cov(attitude),
+#'   iterations = 1000L
+#' )
 #' print(res)
 #' plot(res)
 #'
 #' set.seed(1)
 #' V5 <- simSynthData(attitude, M = 5)
-#' res5<-gv_test(V5, M = 5, Sigma = cov(attitude),
-#'         iterations = 1000L)
+#' res5 <- gv_test(V5,
+#'   M = 5, Sigma = cov(attitude),
+#'   iterations = 1000L
+#' )
 #'
 #' print(res5)
 #' plot(res5)
@@ -63,7 +67,6 @@ gv_test <- function(V, M = 1L, Sigma,
                     alpha = 0.05,
                     iterations = 10000L,
                     null_dist = NULL) {
-
   V <- .validate_X(V)
   M <- .validate_M(M)
   alpha <- .validate_alpha(alpha)
@@ -159,7 +162,6 @@ gv_ci <- function(V, M = 1L, Sigma,
                   alpha = 0.05,
                   iterations = 10000L,
                   null_dist = NULL) {
-
   if (missing(Sigma)) {
     return(
       gv_test(
@@ -232,7 +234,6 @@ sphericity_test <- function(V, M = 1L,
                             alpha = 0.05,
                             iterations = 10000L,
                             null_dist = NULL) {
-
   V <- .validate_X(V)
   M <- .validate_M(M)
   alpha <- .validate_alpha(alpha)
@@ -365,7 +366,6 @@ independence_test <- function(V, M = 1L,
                               alpha = 0.05,
                               iterations = 10000L,
                               null_dist = NULL) {
-
   V <- .validate_X(V)
   M <- .validate_M(M)
   alpha <- .validate_alpha(alpha)
@@ -514,11 +514,12 @@ independence_test <- function(V, M = 1L,
 #'
 #' # Named interface with Delta0 estimated from the original data
 #' S0 <- cov(attitude)
-#' response   = c("rating", "complaints", "advance")
-#' predictors = c("privileges", "learning", "raises", "critical")
-#' b      <- partition(S0,
-#'                     part1 = response,
-#'                     part2 = predictors)
+#' response <- c("rating", "complaints", "advance")
+#' predictors <- c("privileges", "learning", "raises", "critical")
+#' b <- partition(S0,
+#'   part1 = response,
+#'   part2 = predictors
+#' )
 #' Delta0 <- b$B %*% solve(b$D)
 #'
 #' regression_test(
@@ -538,7 +539,6 @@ regression_test <- function(V, M = 1L,
                             alpha = 0.05,
                             iterations = 10000L,
                             null_dist = NULL) {
-
   V <- .validate_X(V)
   M <- .validate_M(M)
   alpha <- .validate_alpha(alpha)
