@@ -1,78 +1,50 @@
-# =============================================================================
-# Classical (likelihood-ratio) tests on the original confidential data
-#
-# These four functions mirror the exact PS procedures in inference_functions.R
-# but apply classical large-sample tests to the original data matrix X rather
-# than to synthetic releases.  They allow a direct side-by-side comparison of
-# the original-data conclusions with the PS inferential results.
-#
-# Functions:
-#   original_gv_test()            - Bartlett-Box chi-sq test for |Sigma| = |Sigma_0|
-#   original_sphericity_test()    - Bartlett-Box chi-sq test for Sigma = sigma^2 I_p
-#   original_independence_test()  - Bartlett factored-likelihood chi-sq test
-#   original_regression_test()    - Wilks Lambda F-approximation
-# =============================================================================
-
-
-# ---------------------------------------------------------------------------
-# Internal helper: Wilks F-approximation parameters (Rao 1951)
-# ---------------------------------------------------------------------------
-.wilks_f_params <- function(p1, p2, nu) {
-  # nu = n - 1 (original-data Wishart df)
-  # s  = sqrt((p1^2 * p2^2 - 4) / (p1^2 + p2^2 - 5))  [= p2 if p1=1, p1 if p2=1]
-  denom2 <- p1^2 + p2^2 - 5
-  s  <- if (denom2 > 0) sqrt((p1^2 * p2^2 - 4) / denom2) else 1.0
-  df1 <- p1 * p2
-  df2 <- s * (nu - (p1 + p2 + 1) / 2) - (p1 * p2 - 2) / 2 - 1
-  list(s = s, df1 = df1, df2 = df2)
-}
-
-
-# ---------------------------------------------------------------------------
-# 1. Generalised Variance — classical test on original data
-# ---------------------------------------------------------------------------
-
-#' @title Classical Generalised Variance Test (Original Data)
+#' @title Classical Generalized Variance Test (Original Data)
 #'
 #' @description
-#' Tests \eqn{H_0 : |\Sigma| = |\Sigma_0|} using the original confidential
-#' data matrix \code{X}.  The null value \code{Sigma0} is typically
-#' \code{cov(X)} itself, in which case the test statistic equals the MLE and
-#' the p-value is exactly 1 by construction.  Supplying a different
-#' \code{Sigma0} yields a meaningful likelihood-ratio chi-square test via the
-#' Bartlett correction.
+#' Tests \eqn{H_0 : |\Sigma| = |\Sigma_0|} using the original data matrix
+#' \code{X}. The null value \code{Sigma0} is typically supplied by the
+#' user.
+#'
+#' If \code{Sigma0 = cov(X)}, the null determinant is estimated from the
+#' same data used to compute the test statistic. In that case, the
+#' determinant ratio is one, the chi-square statistic is zero, and the
+#' \eqn{p}-value is one by construction.
+#'
+#' Supplying a different \code{Sigma0} gives a likelihood-ratio
+#' chi-square test with Bartlett correction.
 #'
 #' The test statistic is
 #' \deqn{
 #'   \chi^2 = -\Bigl[(n-1) - \tfrac{2p^2+p+2}{6p}\Bigr]
-#'             \log\!\Bigl(\tfrac{|\hat\Sigma|}{|\Sigma_0|}\Bigr)
+#'             \log\!\Bigl(\tfrac{|\hat\Sigma|}{|\Sigma_0|}\Bigr),
 #' }
 #' referred to a \eqn{\chi^2} distribution with
 #' \eqn{\tfrac{1}{2}p(p+1) - 1} degrees of freedom.
 #'
-#' @param X Original data matrix (\eqn{n \times p}).
-#' @param Sigma0 \eqn{p \times p} positive-definite null covariance matrix.
-#'   Defaults to \code{cov(X)}.
-#' @param alpha Significance level (default \code{0.05}).
+#' @param X Original data matrix with dimension \eqn{n \times p}.
+#' @param Sigma0 A \eqn{p \times p} positive-definite null covariance
+#'   matrix. The default is \code{cov(X)}.
+#' @param alpha Significance level. The default is \code{0.05}.
 #'
-#' @return A list with components:
+#' @return
+#' A list with components:
 #' \describe{
-#'   \item{\code{statistic}}{Observed \eqn{\chi^2} statistic
-#'     (or \eqn{|\hat\Sigma|} when \code{Sigma0 = cov(X)}).}
-#'   \item{\code{p.value}}{p-value.}
-#'   \item{\code{df}}{Degrees of freedom \eqn{p(p+1)/2 - 1}.}
+#'   \item{\code{statistic}}{Observed \eqn{\chi^2} statistic.}
+#'   \item{\code{p.value}}{\eqn{p}-value.}
+#'   \item{\code{df}}{Degrees of freedom, \eqn{p(p+1)/2 - 1}.}
 #'   \item{\code{det.Sigma.hat}}{Value of \eqn{|\hat\Sigma|}.}
-#'   \item{\code{decision}}{Character: \code{"Reject H0"} or
-#'     \code{"Fail to Reject H0"}.}
+#'   \item{\code{decision}}{Character string: \code{"Reject H0"} or
+#'     \code{"Fail to reject H0"}.}
 #'   \item{\code{alpha}}{Significance level used.}
 #'   \item{\code{n}, \code{p}}{Sample size and number of variables.}
 #' }
 #'
-#' @seealso \code{\link{gv_test}}
+#' @seealso
+#' \code{\link{gv_test}}
 #'
 #' @references
-#' Anderson, T. W. (1984). \emph{An Introduction to Multivariate Statistical
-#' Analysis}, 2nd edn. Wiley.
+#' Anderson, T. W. (1984). \emph{An Introduction to Multivariate
+#' Statistical Analysis}, 2nd ed. Wiley.
 #'
 #' @export
 #'
@@ -130,42 +102,45 @@ original_gv_test <- function(X, Sigma0 = NULL, alpha = 0.05) {
 }
 
 
-# ---------------------------------------------------------------------------
-# 2. Sphericity — classical test on original data
-# ---------------------------------------------------------------------------
-
 #' @title Classical Sphericity Test (Original Data)
 #'
 #' @description
-#' Tests \eqn{H_0 : \Sigma = \sigma^2 I_p} using the Bartlett--Box
-#' chi-square approximation applied to the original data \code{X}.
+#' Tests \eqn{H_0 : \Sigma = \sigma^2 I_p} using the Bartlett-Box
+#' chi-square approximation applied to the original data matrix \code{X}.
 #'
 #' The Mauchly statistic is
-#' \deqn{W = \frac{|\hat\Sigma|}{(\mathrm{tr}(\hat\Sigma)/p)^p}}
+#' \deqn{
+#'   W = \frac{|\hat\Sigma|}{(\mathrm{tr}(\hat\Sigma)/p)^p},
+#' }
 #' and the test statistic is
 #' \deqn{
 #'   \chi^2 = -\Bigl[(n-1) - \tfrac{2p^2+p+2}{6p}\Bigr]\log W,
 #' }
-#' referred to \eqn{\chi^2} with \eqn{\tfrac{1}{2}p(p+1)-1} degrees of
-#' freedom.
+#' referred to a \eqn{\chi^2} distribution with
+#' \eqn{\tfrac{1}{2}p(p+1)-1} degrees of freedom.
 #'
-#' @param X Original data matrix (\eqn{n \times p}).
-#' @param alpha Significance level (default \code{0.05}).
+#' @param X Original data matrix with dimension \eqn{n \times p}.
+#' @param alpha Significance level. The default is \code{0.05}.
 #'
-#' @return A list with components \code{statistic} (\eqn{\chi^2}),
-#'   \code{p.value}, \code{df}, \code{W} (Mauchly statistic),
-#'   \code{sigma2.hat} (plug-in \eqn{\hat\sigma^2 = \mathrm{tr}(\hat\Sigma)/p}),
-#'   \code{decision}, \code{alpha}, \code{n}, \code{p}.
+#' @return
+#' A list with components \code{statistic} (\eqn{\chi^2}),
+#' \code{p.value}, \code{df}, \code{W} (Mauchly statistic),
+#' \code{sigma2.hat} (plug-in estimate
+#' \eqn{\hat\sigma^2 = \mathrm{tr}(\hat\Sigma)/p}), \code{decision},
+#' \code{alpha}, \code{n}, and \code{p}.
 #'
-#' @seealso \code{\link{sphericity_test}}
+#' @seealso
+#' \code{\link{sphericity_test}}
 #'
 #' @references
-#' Anderson, T. W. (1984). \emph{An Introduction to Multivariate Statistical
-#' Analysis}, 2nd edn. Wiley.
+#' Anderson, T. W. (1984). \emph{An Introduction to Multivariate
+#' Statistical Analysis}, 2nd ed. Wiley.
 #'
 #' Bartlett, M. S. (1954). A note on the multiplying factors for various
-#' chi-squared approximations. \emph{Journal of the Royal Statistical
-#' Society Series B}, 16, 296--298.
+#' chi-square approximations. \emph{Journal of the Royal Statistical
+#' Society Series B}, \strong{16}, 296--298.
+#'
+#'
 #'
 #' @export
 #'
@@ -205,43 +180,45 @@ original_sphericity_test <- function(X, alpha = 0.05) {
   )
 }
 
-
-# ---------------------------------------------------------------------------
-# 3. Independence — classical test on original data
-# ---------------------------------------------------------------------------
-
 #' @title Classical Independence Test (Original Data)
 #'
 #' @description
-#' Tests \eqn{H_0 : \Sigma_{12} = \mathbf{0}} (block independence) using
-#' Bartlett's factored-likelihood chi-square approximation applied to the
-#' original data \code{X}.
+#' Tests \eqn{H_0 : \Sigma_{12} = \mathbf{0}}, corresponding to block
+#' independence, using Bartlett's factored-likelihood chi-square
+#' approximation applied to the original data matrix \code{X}.
 #'
 #' The Wilks statistic is
-#' \deqn{\Lambda = \frac{|\hat\Sigma|}{|\hat\Sigma_{11}||\hat\Sigma_{22}|}}
+#' \deqn{
+#'   \Lambda =
+#'   \frac{|\hat\Sigma|}
+#'        {|\hat\Sigma_{11}| |\hat\Sigma_{22}|},
+#' }
 #' and the test statistic is
 #' \deqn{
 #'   \chi^2 = -\Bigl[(n-1) - \tfrac{p+3}{2}\Bigr]\log\Lambda,
 #' }
-#' referred to \eqn{\chi^2} with \eqn{p_1 p_2} degrees of freedom.
+#' referred to a \eqn{\chi^2} distribution with \eqn{p_1 p_2} degrees
+#' of freedom.
 #'
-#' @param X Original data matrix (\eqn{n \times p}).
-#' @param part Integer scalar. First \code{part} columns form Block 1.
-#'   Ignored when \code{group_a}/\code{group_b} are supplied.
-#' @param group_a Integer indices or column names for Block 1.
-#' @param group_b Integer indices or column names for Block 2.
-#' @param alpha Significance level (default \code{0.05}).
+#' @param X Original data matrix with dimension \eqn{n \times p}.
+#' @param part Integer scalar. The first \code{part} columns form Block 1.
+#'   Ignored when \code{group_a} and \code{group_b} are supplied.
+#' @param group_a Integer indices or column names identifying Block 1.
+#' @param group_b Integer indices or column names identifying Block 2.
+#' @param alpha Significance level. The default is \code{0.05}.
 #'
-#' @return A list with \code{statistic} (\eqn{\chi^2}), \code{p.value},
-#'   \code{df}, \code{Lambda} (Wilks statistic), \code{decision},
-#'   \code{alpha}, \code{n}, \code{p}, \code{p1}, \code{p2},
-#'   \code{lbl1}, \code{lbl2}.
+#' @return
+#' A list with components \code{statistic} (\eqn{\chi^2}),
+#' \code{p.value}, \code{df}, \code{Lambda} (Wilks statistic),
+#' \code{decision}, \code{alpha}, \code{n}, \code{p}, \code{p1},
+#' \code{p2}, \code{lbl1}, and \code{lbl2}.
 #'
-#' @seealso \code{\link{independence_test}}
+#' @seealso
+#' \code{\link{independence_test}}
 #'
 #' @references
-#' Anderson, T. W. (1984). \emph{An Introduction to Multivariate Statistical
-#' Analysis}, 2nd edn. Wiley.
+#' Anderson, T. W. (1984). \emph{An Introduction to Multivariate
+#' Statistical Analysis}, 2nd ed. Wiley.
 #'
 #' @export
 #'
@@ -301,57 +278,67 @@ original_independence_test <- function(X,
   )
 }
 
-
-# ---------------------------------------------------------------------------
-# 4. Regression — classical test on original data
-# ---------------------------------------------------------------------------
-
 #' @title Classical Regression Test (Original Data)
 #'
 #' @description
-#' Tests \eqn{H_0 : \Delta = \Delta_0} for the population regression matrix
-#' \eqn{\Delta = \Sigma_{12}\Sigma_{22}^{-1}}, using the Wilks
-#' \eqn{\Lambda} \eqn{F}-approximation (Rao 1951) applied to the original
-#' data \code{X}.
+#' Tests \eqn{H_0 : \Delta = \Delta_0} for the population regression
+#' matrix \eqn{\Delta = \Sigma_{12}\Sigma_{22}^{-1}}, using Rao's
+#' \eqn{F}-approximation to Wilks' \eqn{\Lambda} statistic applied to
+#' the original data matrix \code{X}.
 #'
 #' The Wilks statistic is
 #' \deqn{
-#'   \Lambda = \frac{|\hat\Sigma_{11.2(\Delta_0)}|}{|\hat\Sigma_{11}|}
+#'   \Lambda =
+#'   \frac{|\hat\Sigma_{11.2(\Delta_0)}|}
+#'        {|\hat\Sigma_{11}|},
 #' }
-#' where \eqn{\hat\Sigma_{11.2(\Delta_0)} = \hat\Sigma_{11} -
-#' (\hat\Delta - \Delta_0)\hat\Sigma_{22}(\hat\Delta - \Delta_0)^\top}
-#' is the residual Schur complement under \eqn{H_0}.  This equals the
+#' where
+#' \deqn{
+#'   \hat\Sigma_{11.2(\Delta_0)}
+#'   =
+#'   \hat\Sigma_{11}
+#'   -
+#'   (\hat\Delta - \Delta_0)
+#'   \hat\Sigma_{22}
+#'   (\hat\Delta - \Delta_0)^\top
+#' }
+#' is the residual Schur complement under \eqn{H_0}. This equals the
 #' ordinary Schur complement \eqn{\hat\Sigma_{11.2}} when
-#' \eqn{\Delta_0 = \hat\Delta} (the MLE), giving \eqn{\Lambda = 1} and
-#' \eqn{F = 0} by construction.  The default \code{Delta0 = NULL} tests
-#' \eqn{H_0 : \Delta = 0} (zero regression), which is the natural
-#' classical comparison.
+#' \eqn{\Delta_0 = \hat\Delta}, giving \eqn{\Lambda = 1} and
+#' \eqn{F = 0} by construction. The default \code{Delta0 = NULL} tests
+#' \eqn{H_0 : \Delta = 0}, corresponding to zero regression.
 #'
-#' @param X Original data matrix (\eqn{n \times p}).
-#' @param part Integer scalar. Size of the response block (Block 1,
-#'   first \code{part} columns). Ignored when \code{response}/
-#'   \code{predictors} are supplied. Must satisfy \eqn{p_1 \leq p_2}.
-#' @param Delta0 \eqn{p_1 \times p_2} null regression matrix.
-#'   Default \code{NULL} sets \eqn{\Delta_0 = 0} (zero regression).
-#' @param response Integer or character vector for the response block.
-#' @param predictors Integer or character vector for the predictor block.
-#' @param alpha Significance level (default \code{0.05}).
 #'
-#' @return A list with \code{statistic} (\eqn{F}), \code{p.value},
-#'   \code{df1}, \code{df2}, \code{Lambda}, \code{Delta.hat}
-#'   (\eqn{\hat\Delta = \hat\Sigma_{12}\hat\Sigma_{22}^{-1}}),
-#'   \code{decision}, \code{alpha}, \code{n}, \code{p}, \code{p1},
-#'   \code{p2}, \code{lbl1}, \code{lbl2}.
+#' @param X Original data matrix with dimension \eqn{n \times p}.
+#' @param part Integer scalar giving the size of the response block
+#'   (Block 1). The first \code{part} columns form the response block.
+#'   Ignored when \code{response} and \code{predictors} are supplied.
+#'   Must satisfy \eqn{p_1 \leq p_2}.
+#' @param Delta0 A \eqn{p_1 \times p_2} null regression matrix. The
+#'   default \code{NULL} sets \eqn{\Delta_0 = 0}.
+#' @param response Integer or character vector identifying the response
+#'   block.
+#' @param predictors Integer or character vector identifying the predictor
+#'   block.
+#' @param alpha Significance level. The default is \code{0.05}.
 #'
-#' @seealso \code{\link{regression_test}}
+#' @return
+#' A list with components \code{statistic} (\eqn{F}), \code{p.value},
+#' \code{df1}, \code{df2}, \code{Lambda}, \code{Delta.hat}
+#' (\eqn{\hat\Delta = \hat\Sigma_{12}\hat\Sigma_{22}^{-1}}),
+#' \code{decision}, \code{alpha}, \code{n}, \code{p}, \code{p1},
+#' \code{p2}, \code{lbl1}, and \code{lbl2}.
+#'
+#' @seealso
+#' \code{\link{regression_test}}
 #'
 #' @references
-#' Anderson, T. W. (1984). \emph{An Introduction to Multivariate Statistical
-#' Analysis}, 2nd edn. Wiley, Section 8.4.
+#' Anderson, T. W. (1984). \emph{An Introduction to Multivariate
+#' Statistical Analysis}, 2nd ed. Wiley, Section 8.4.
 #'
 #' Rao, C. R. (1951). An asymptotic expansion of the distribution of
 #' Wilks' criterion. \emph{Bulletin of the International Statistical
-#' Institute}, 33, 177--180.
+#' Institute}, \strong{33}, 177--180.
 #'
 #' @export
 #'
@@ -455,16 +442,17 @@ original_regression_test <- function(X,
   )
 }
 
-
-# ---------------------------------------------------------------------------
-# S3 print method for original_test objects
-# ---------------------------------------------------------------------------
-
 #' @title Print an \code{original_test} Object
-#' @description Prints a concise summary of a classical test result.
+#'
+#' @description
+#' Prints a concise summary of a classical test result.
+#'
 #' @param x An object of class \code{original_test}.
-#' @param ... Further arguments (currently ignored).
-#' @return Invisibly returns \code{x}.
+#' @param ... Further arguments, currently ignored.
+#'
+#' @return
+#' Invisibly returns \code{x}.
+#'
 #' @exportS3Method print original_test
 print.original_test <- function(x, ...) {
   bar <- strrep("-", 52)

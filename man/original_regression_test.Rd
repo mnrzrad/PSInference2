@@ -14,46 +14,58 @@ original_regression_test(
 )
 }
 \arguments{
-\item{X}{Original data matrix (\eqn{n \times p}).}
+\item{X}{Original data matrix with dimension \eqn{n \times p}.}
 
-\item{part}{Integer scalar. Size of the response block (Block 1,
-first \code{part} columns). Ignored when \code{response}/
-\code{predictors} are supplied. Must satisfy \eqn{p_1 \leq p_2}.}
+\item{part}{Integer scalar giving the size of the response block
+(Block 1). The first \code{part} columns form the response block.
+Ignored when \code{response} and \code{predictors} are supplied.
+Must satisfy \eqn{p_1 \leq p_2}.}
 
-\item{Delta0}{\eqn{p_1 \times p_2} null regression matrix.
-Default \code{NULL} sets \eqn{\Delta_0 = 0} (zero regression).}
+\item{Delta0}{A \eqn{p_1 \times p_2} null regression matrix. The
+default \code{NULL} sets \eqn{\Delta_0 = 0}.}
 
-\item{response}{Integer or character vector for the response block.}
+\item{response}{Integer or character vector identifying the response
+block.}
 
-\item{predictors}{Integer or character vector for the predictor block.}
+\item{predictors}{Integer or character vector identifying the predictor
+block.}
 
-\item{alpha}{Significance level (default \code{0.05}).}
+\item{alpha}{Significance level. The default is \code{0.05}.}
 }
 \value{
-A list with \code{statistic} (\eqn{F}), \code{p.value},
-  \code{df1}, \code{df2}, \code{Lambda}, \code{Delta.hat}
-  (\eqn{\hat\Delta = \hat\Sigma_{12}\hat\Sigma_{22}^{-1}}),
-  \code{decision}, \code{alpha}, \code{n}, \code{p}, \code{p1},
-  \code{p2}, \code{lbl1}, \code{lbl2}.
+A list with components \code{statistic} (\eqn{F}), \code{p.value},
+\code{df1}, \code{df2}, \code{Lambda}, \code{Delta.hat}
+(\eqn{\hat\Delta = \hat\Sigma_{12}\hat\Sigma_{22}^{-1}}),
+\code{decision}, \code{alpha}, \code{n}, \code{p}, \code{p1},
+\code{p2}, \code{lbl1}, and \code{lbl2}.
 }
 \description{
-Tests \eqn{H_0 : \Delta = \Delta_0} for the population regression matrix
-\eqn{\Delta = \Sigma_{12}\Sigma_{22}^{-1}}, using the Wilks
-\eqn{\Lambda} \eqn{F}-approximation (Rao 1951) applied to the original
-data \code{X}.
+Tests \eqn{H_0 : \Delta = \Delta_0} for the population regression
+matrix \eqn{\Delta = \Sigma_{12}\Sigma_{22}^{-1}}, using Rao's
+\eqn{F}-approximation to Wilks' \eqn{\Lambda} statistic applied to
+the original data matrix \code{X}.
 
 The Wilks statistic is
 \deqn{
-  \Lambda = \frac{|\hat\Sigma_{11.2(\Delta_0)}|}{|\hat\Sigma_{11}|}
+  \Lambda =
+  \frac{|\hat\Sigma_{11.2(\Delta_0)}|}
+       {|\hat\Sigma_{11}|},
 }
-where \eqn{\hat\Sigma_{11.2(\Delta_0)} = \hat\Sigma_{11} -
-(\hat\Delta - \Delta_0)\hat\Sigma_{22}(\hat\Delta - \Delta_0)^\top}
-is the residual Schur complement under \eqn{H_0}.  This equals the
+where
+\deqn{
+  \hat\Sigma_{11.2(\Delta_0)}
+  =
+  \hat\Sigma_{11}
+  -
+  (\hat\Delta - \Delta_0)
+  \hat\Sigma_{22}
+  (\hat\Delta - \Delta_0)^\top
+}
+is the residual Schur complement under \eqn{H_0}. This equals the
 ordinary Schur complement \eqn{\hat\Sigma_{11.2}} when
-\eqn{\Delta_0 = \hat\Delta} (the MLE), giving \eqn{\Lambda = 1} and
-\eqn{F = 0} by construction.  The default \code{Delta0 = NULL} tests
-\eqn{H_0 : \Delta = 0} (zero regression), which is the natural
-classical comparison.
+\eqn{\Delta_0 = \hat\Delta}, giving \eqn{\Lambda = 1} and
+\eqn{F = 0} by construction. The default \code{Delta0 = NULL} tests
+\eqn{H_0 : \Delta = 0}, corresponding to zero regression.
 }
 \examples{
 data(brittany_soil_ps)
@@ -75,12 +87,12 @@ original_regression_test(X,
   Delta0 = Delta0)
 }
 \references{
-Anderson, T. W. (1984). \emph{An Introduction to Multivariate Statistical
-Analysis}, 2nd edn. Wiley, Section 8.4.
+Anderson, T. W. (1984). \emph{An Introduction to Multivariate
+Statistical Analysis}, 2nd ed. Wiley, Section 8.4.
 
 Rao, C. R. (1951). An asymptotic expansion of the distribution of
 Wilks' criterion. \emph{Bulletin of the International Statistical
-Institute}, 33, 177--180.
+Institute}, \strong{33}, 177--180.
 }
 \seealso{
 \code{\link{regression_test}}

@@ -13,35 +13,40 @@ original_independence_test(
 )
 }
 \arguments{
-\item{X}{Original data matrix (\eqn{n \times p}).}
+\item{X}{Original data matrix with dimension \eqn{n \times p}.}
 
-\item{part}{Integer scalar. First \code{part} columns form Block 1.
-Ignored when \code{group_a}/\code{group_b} are supplied.}
+\item{part}{Integer scalar. The first \code{part} columns form Block 1.
+Ignored when \code{group_a} and \code{group_b} are supplied.}
 
-\item{group_a}{Integer indices or column names for Block 1.}
+\item{group_a}{Integer indices or column names identifying Block 1.}
 
-\item{group_b}{Integer indices or column names for Block 2.}
+\item{group_b}{Integer indices or column names identifying Block 2.}
 
-\item{alpha}{Significance level (default \code{0.05}).}
+\item{alpha}{Significance level. The default is \code{0.05}.}
 }
 \value{
-A list with \code{statistic} (\eqn{\chi^2}), \code{p.value},
-  \code{df}, \code{Lambda} (Wilks statistic), \code{decision},
-  \code{alpha}, \code{n}, \code{p}, \code{p1}, \code{p2},
-  \code{lbl1}, \code{lbl2}.
+A list with components \code{statistic} (\eqn{\chi^2}),
+\code{p.value}, \code{df}, \code{Lambda} (Wilks statistic),
+\code{decision}, \code{alpha}, \code{n}, \code{p}, \code{p1},
+\code{p2}, \code{lbl1}, and \code{lbl2}.
 }
 \description{
-Tests \eqn{H_0 : \Sigma_{12} = \mathbf{0}} (block independence) using
-Bartlett's factored-likelihood chi-square approximation applied to the
-original data \code{X}.
+Tests \eqn{H_0 : \Sigma_{12} = \mathbf{0}}, corresponding to block
+independence, using Bartlett's factored-likelihood chi-square
+approximation applied to the original data matrix \code{X}.
 
 The Wilks statistic is
-\deqn{\Lambda = \frac{|\hat\Sigma|}{|\hat\Sigma_{11}||\hat\Sigma_{22}|}}
+\deqn{
+  \Lambda =
+  \frac{|\hat\Sigma|}
+       {|\hat\Sigma_{11}| |\hat\Sigma_{22}|},
+}
 and the test statistic is
 \deqn{
   \chi^2 = -\Bigl[(n-1) - \tfrac{p+3}{2}\Bigr]\log\Lambda,
 }
-referred to \eqn{\chi^2} with \eqn{p_1 p_2} degrees of freedom.
+referred to a \eqn{\chi^2} distribution with \eqn{p_1 p_2} degrees
+of freedom.
 }
 \examples{
 data(brittany_soil_ps)
@@ -51,8 +56,8 @@ original_independence_test(brittany_soil_ps,
               "log_Total_N", "log_P_Olsen"))
 }
 \references{
-Anderson, T. W. (1984). \emph{An Introduction to Multivariate Statistical
-Analysis}, 2nd edn. Wiley.
+Anderson, T. W. (1984). \emph{An Introduction to Multivariate
+Statistical Analysis}, 2nd ed. Wiley.
 }
 \seealso{
 \code{\link{independence_test}}

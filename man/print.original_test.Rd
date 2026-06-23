@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{An object of class \code{original_test}.}
 
-\item{...}{Further arguments (currently ignored).}
+\item{...}{Further arguments, currently ignored.}
 }
 \value{
 Invisibly returns \code{x}.

@@ -2,44 +2,48 @@
 % Please edit documentation in R/original_data_test.R
 \name{original_gv_test}
 \alias{original_gv_test}
-\title{Classical Generalised Variance Test (Original Data)}
+\title{Classical Generalized Variance Test (Original Data)}
 \usage{
 original_gv_test(X, Sigma0 = NULL, alpha = 0.05)
 }
 \arguments{
-\item{X}{Original data matrix (\eqn{n \times p}).}
+\item{X}{Original data matrix with dimension \eqn{n \times p}.}
 
-\item{Sigma0}{\eqn{p \times p} positive-definite null covariance matrix.
-Defaults to \code{cov(X)}.}
+\item{Sigma0}{A \eqn{p \times p} positive-definite null covariance
+matrix. The default is \code{cov(X)}.}
 
-\item{alpha}{Significance level (default \code{0.05}).}
+\item{alpha}{Significance level. The default is \code{0.05}.}
 }
 \value{
 A list with components:
 \describe{
-  \item{\code{statistic}}{Observed \eqn{\chi^2} statistic
-    (or \eqn{|\hat\Sigma|} when \code{Sigma0 = cov(X)}).}
-  \item{\code{p.value}}{p-value.}
-  \item{\code{df}}{Degrees of freedom \eqn{p(p+1)/2 - 1}.}
+  \item{\code{statistic}}{Observed \eqn{\chi^2} statistic.}
+  \item{\code{p.value}}{\eqn{p}-value.}
+  \item{\code{df}}{Degrees of freedom, \eqn{p(p+1)/2 - 1}.}
   \item{\code{det.Sigma.hat}}{Value of \eqn{|\hat\Sigma|}.}
-  \item{\code{decision}}{Character: \code{"Reject H0"} or
-    \code{"Fail to Reject H0"}.}
+  \item{\code{decision}}{Character string: \code{"Reject H0"} or
+    \code{"Fail to reject H0"}.}
   \item{\code{alpha}}{Significance level used.}
   \item{\code{n}, \code{p}}{Sample size and number of variables.}
 }
 }
 \description{
-Tests \eqn{H_0 : |\Sigma| = |\Sigma_0|} using the original confidential
-data matrix \code{X}.  The null value \code{Sigma0} is typically
-\code{cov(X)} itself, in which case the test statistic equals the MLE and
-the p-value is exactly 1 by construction.  Supplying a different
-\code{Sigma0} yields a meaningful likelihood-ratio chi-square test via the
-Bartlett correction.
+Tests \eqn{H_0 : |\Sigma| = |\Sigma_0|} using the original data matrix
+\code{X}. The null value \code{Sigma0} is typically supplied by the
+user.
+
+If \code{Sigma0 = cov(X)}, the null determinant is estimated from the
+same data used to compute the test statistic. In that case, the
+determinant ratio is one, the chi-square statistic is zero, and the
+\eqn{p}-value is one by construction.
+
+Supplying a different \code{Sigma0} gives a likelihood-ratio
+chi-square test with Bartlett correction.
 
 The test statistic is
 \deqn{
   \chi^2 = -\Bigl[(n-1) - \tfrac{2p^2+p+2}{6p}\Bigr]
-            \log\!\Bigl(\tfrac{|\hat\Sigma|}{|\Sigma_0|}\Bigr)
+            \log\!\Bigl(\tfrac{|\hat\Sigma|}{|\Sigma_0|}\Bigr),
 }
 referred to a \eqn{\chi^2} distribution with
 \eqn{\tfrac{1}{2}p(p+1) - 1} degrees of freedom.
@@ -56,8 +60,8 @@ Sigma0 <- diag(ncol(X))
 original_gv_test(X, Sigma0 = Sigma0)
 }
 \references{
-Anderson, T. W. (1984). \emph{An Introduction to Multivariate Statistical
-Analysis}, 2nd edn. Wiley.
+Anderson, T. W. (1984). \emph{An Introduction to Multivariate
+Statistical Analysis}, 2nd ed. Wiley.
 }
 \seealso{
 \code{\link{gv_test}}

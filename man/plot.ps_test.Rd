@@ -17,15 +17,16 @@
 \arguments{
 \item{x}{An object of class \code{ps_test}.}
 
-\item{main}{Optional title string. Auto-generated if \code{NULL}.}
+\item{main}{Optional title string. If \code{NULL}, a title is generated
+automatically.}
 
-\item{shade_col}{Colour for the rejection-region shading.}
+\item{shade_col}{Color for the rejection-region shading.}
 
-\item{dist_col}{Colour for the null-distribution density fill.}
+\item{dist_col}{Color for the null-distribution density fill.}
 
-\item{stat_col}{Colour for the observed-statistic line.}
+\item{stat_col}{Color for the observed-statistic line.}
 
-\item{crit_col}{Colour for the critical-value line(s).}
+\item{crit_col}{Color for the critical-value line(s).}
 
 \item{...}{Further arguments passed to \code{plot()}.}
 }
@@ -34,16 +35,16 @@ Invisibly returns \code{x}.
 }
 \description{
 Produces a density plot of the simulated null distribution with the
-observed test statistic and critical value(s) marked, and the
-rejection region shaded.
+observed test statistic and critical value(s) marked. The rejection
+region is shaded.
 
-The x-axis always shows both the null distribution and the observed
-statistic. For the generalised variance and regression tests a log10
-scale is used automatically because these statistics span many orders
-of magnitude. Key information is placed below the plot as text so it
-never overlaps the density curve. The function is multi-panel aware:
-inside \code{par(mfrow = ...)} it uses compact in-plot annotations
-and does not modify the outer margins.
+The x-axis always includes both the null distribution and the observed
+statistic. For the generalized variance and regression tests, a
+log10 scale is used automatically because these statistics may span
+several orders of magnitude. Key information is placed below the plot
+as text so it does not overlap the density curve. The function is
+multi-panel aware: inside \code{par(mfrow = ...)}, it uses compact
+in-plot annotations and does not modify the outer margins.
 }
 \examples{
 data(ps_attitude)

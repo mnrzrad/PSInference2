@@ -2,26 +2,25 @@
 % Please edit documentation in R/ps_test_class.R
 \name{summary.ps_test}
 \alias{summary.ps_test}
-\title{Summarise a \code{ps_test} Object}
+\title{Summarize a \code{ps_test} Object}
 \usage{
 \method{summary}{ps_test}(object, ...)
 }
 \arguments{
 \item{object}{An object of class \code{ps_test}.}
 
-\item{...}{Further arguments (currently ignored).}
+\item{...}{Further arguments, currently ignored.}
 }
 \value{
 Invisibly returns \code{object}.
 }
 \description{
-Prints a detailed summary including the null
-  distribution quantiles and a comparison with the observed
-  statistic.
+Prints a detailed summary including the null-distribution quantiles
+and a comparison with the observed statistic.
 }
 \examples{
-data(ps_attitude)
-V <- simSynthData(ps_attitude, M = 3)
+data(attitude)
+V <- simSynthData(attitude, M = 3)
 res <- sphericity_test(V, M = 3)
 summary(res)
 }

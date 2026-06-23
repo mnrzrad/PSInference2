@@ -533,3 +533,14 @@
     p2 = p2
   )
 }
+
+
+.wilks_f_params <- function(p1, p2, nu) {
+  # nu = n - 1 (original-data Wishart df)
+  # s  = sqrt((p1^2 * p2^2 - 4) / (p1^2 + p2^2 - 5))  [= p2 if p1=1, p1 if p2=1]
+  denom2 <- p1^2 + p2^2 - 5
+  s  <- if (denom2 > 0) sqrt((p1^2 * p2^2 - 4) / denom2) else 1.0
+  df1 <- p1 * p2
+  df2 <- s * (nu - (p1 + p2 + 1) / 2) - (p1 * p2 - 2) / 2 - 1
+  list(s = s, df1 = df1, df2 = df2)
+}

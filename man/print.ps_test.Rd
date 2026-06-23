@@ -9,18 +9,32 @@
 \arguments{
 \item{x}{An object of class \code{ps_test}.}
 
-\item{...}{Further arguments (currently ignored).}
+\item{...}{Further arguments, currently ignored.}
 }
 \value{
+Invisibly returns \code{x}.
+
 Invisibly returns \code{x}.
 }
 \description{
 Prints a concise, human-readable summary of the test
   result stored in a \code{ps_test} object.
+
+Prints a concise, human-readable summary of the test result stored in
+a \code{ps_test} object.
 }
 \examples{
 data(ps_attitude)
 V <- simSynthData(ps_attitude, M = 3)
 res <- sphericity_test(V, M = 3)
 print(res)
+data(ps_attitude)
+
+set.seed(1)
+V <- simSynthData(ps_attitude, M = 3)
+
+\donttest{
+res <- sphericity_test(V, M = 3, iterations = 1000L)
+print(res)
+}
 }
