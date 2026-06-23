@@ -5,8 +5,8 @@
 \alias{brittany_soil_ps}
 \title{Brittany Loess-Soil Physicochemical Properties}
 \format{
-A numeric matrix with 37 rows and 6 columns (all standardised,
-  mean 0, sd 1):
+A numeric matrix with 37 rows and 6 columns. All variables are
+standardized to mean zero and standard deviation one:
 \describe{
   \item{pH_water}{Soil pH measured in water suspension.}
   \item{pH_KCl}{Soil pH measured in 1 M KCl suspension.}
@@ -19,89 +19,95 @@ A numeric matrix with 37 rows and 6 columns (all standardised,
 }
 }
 \source{
-Morvan, T., Lambert, Y., Germain, P., Lemercier, B., Moreira, M.
+Morvan, T., Lambert, Y., Germain, P., Lemercier, B., Moreira, M.,
 and Beff, L. (2023). A dataset of physico-chemical properties,
 extractable organic N, N mineralisation and physical organic matter
 fractionation of soils. \emph{Data in Brief}, \strong{51}, 109776.
 \doi{10.1016/j.dib.2023.109776}
 
-Data repository (CC BY 4.0): \doi{10.57745/DGIPGR}
+Data repository, licensed under CC BY 4.0:
+\doi{10.57745/DGIPGR}
 }
 \usage{
 brittany_soil_ps
 }
 \description{
-Standardised physicochemical measurements from 37 cultivated fields on
-loess-silt parent material in Brittany, France (Morvan et al., 2023).
-The dataset provides a realistic statistical disclosure control (SDC)
-scenario with \eqn{p = 6} variables in two natural blocks of
-\eqn{p_1 = p_2 = 3}.
+Standardized physicochemical measurements from 37 cultivated fields on
+loess-silt parent material in Brittany, France, derived from Morvan
+et al. (2023). The dataset provides a realistic statistical disclosure
+control (SDC) example with \eqn{p = 6} variables arranged in two natural
+blocks of size \eqn{p_1 = p_2 = 3}.
 
-\strong{Block 1 -- public indicators} (\eqn{p_1 = 3}): standard
-agronomic measurements already published in public soil maps, released
-as observed data: \code{pH_water}, \code{pH_KCl},
-\code{log_CEC_Metson}.
-
-\strong{Block 2 -- sensitive indicators} (\eqn{p_2 = 3}): commercially
-sensitive farm-management measurements, released as PS synthetic draws:
-\code{log_Organic_C}, \code{log_Total_N}, \code{log_P_Olsen}.
+The first block contains standard agronomic indicators that are treated
+as public variables. The second block contains farm-management indicators
+that are treated as sensitive variables and are therefore suitable for
+illustrating plug-in sampling (PS) synthetic data releases.
 }
 \details{
-\subsection{SDC scenario}{
-A regional agency releases standardised soil data from loess farms.
-The public block (pH, log CEC) is released as observed. The sensitive
-block (log OC, log N, log P) is released as plug-in sampling (PS)
-synthetic draws to protect individual farm values.
+The full dataset from Morvan et al. (2023) contains 137 fields across
+three parent-material types. This version retains only the most frequent
+parent-material group, loess-silt.
+
+Variables with approximately log-normal distributions, namely
+cation exchange capacity, organic carbon, total nitrogen, and Olsen-P,
+were log-transformed. Mahalanobis outliers were removed using the
+\eqn{\chi^2_{6, 0.975}} cutoff. The retained variables were then
+standardized.
+
+For illustrative SDC purposes, the variables are partitioned into two
+blocks:
+\describe{
+  \item{Public block}{
+    \code{pH_water}, \code{pH_KCl}, and \code{log_CEC_Metson}.
+  }
+  \item{Sensitive block}{
+    \code{log_Organic_C}, \code{log_Total_N}, and \code{log_P_Olsen}.
+  }
 }
 
-\subsection{Preprocessing}{
-The full dataset (Morvan et al., 2023) spans 137 fields across three
-parent-material types. This subset retains only the most-frequent
-parent-material group (loess-silt). Variables with log-normal
-distributions (CEC, OC, N, P) were log-transformed. Mahalanobis
-outliers at the \eqn{\chi^2_{6, 0.975}} quantile were removed.
-All variables were standardised to mean 0 and standard deviation 1.
-All five tests in \code{\link{mvn_test}} fail to reject multivariate
-normality at the 5\% level.
-}
-}
-\section{Multivariate Normality}{
+This block structure is useful for illustrating independence,
+regression, and covariance-based inference when one block is released
+as observed data and the other block is released through PS synthetic
+draws.
 
-\tabular{lrr}{
-  \strong{Test} \tab \strong{Statistic} \tab \strong{p-value} \cr
-  SW: pH_water       \tab W = 0.968 \tab 0.355 \cr
-  SW: pH_KCl         \tab W = 0.977 \tab 0.614 \cr
-  SW: log_CEC_Metson \tab W = 0.955 \tab 0.139 \cr
-  SW: log_Organic_C  \tab W = 0.957 \tab 0.165 \cr
-  SW: log_Total_N    \tab W = 0.977 \tab 0.638 \cr
-  SW: log_P_Olsen    \tab W = 0.975 \tab 0.568 \cr
-  Mardia skewness    \tab chi-sq = 46.95 \tab 0.800 \cr
-  Mardia kurtosis    \tab z = -1.39      \tab 0.166 \cr
-  Henze-Zirkler      \tab HZ = 0.026     \tab 0.336 \cr
-  Royston H          \tab H = 1.07       \tab 0.710 \cr
+Normality was assessed using the diagnostics implemented in
+\code{\link{mvn_test}}. None of the retained diagnostics rejected
+multivariate normality at the 5\% level.
 }
-}
-
 \examples{
 data(brittany_soil_ps)
+
 dim(brittany_soil_ps)
 colnames(brittany_soil_ps)
 
-# Verify multivariate normality
+# Public and sensitive blocks
+public_block <- c("pH_water", "pH_KCl", "log_CEC_Metson")
+sensitive_block <- c("log_Organic_C", "log_Total_N", "log_P_Olsen")
+
+\donttest{
+# Check multivariate normality
 mvn_test(brittany_soil_ps, hz_nsim = 500, plot = FALSE)
 
-# Generate 3 PS synthetic releases
+# Generate three PS synthetic releases
 set.seed(1)
 V3 <- simSynthData(brittany_soil_ps, M = 3)
 
-# Test independence: public vs sensitive block
-independence_test(V3, M = 3,
-  group_a = c("pH_water", "pH_KCl", "log_CEC_Metson"),
-  group_b = c("log_Organic_C", "log_Total_N", "log_P_Olsen"),
-  iterations = 2000L)
+# Test independence between the public and sensitive blocks
+independence_test(
+  V3,
+  M = 3,
+  group_a = public_block,
+  group_b = sensitive_block,
+  iterations = 500L
+)
+}
+
 }
 \seealso{
-\code{\link{mvn_test}}, \code{\link{simSynthData}},
-  \code{\link{ps_test}}
+\code{\link{mvn_test}},
+\code{\link{simSynthData}},
+\code{\link{ps_test}},
+\code{\link{independence_test}},
+\code{\link{regression_test}}
 }
 \keyword{datasets}
