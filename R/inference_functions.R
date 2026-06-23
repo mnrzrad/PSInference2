@@ -514,8 +514,8 @@ independence_test <- function(V, M = 1L,
 #'
 #' # Named interface with Delta0 estimated from the original data
 #' S0 <- cov(attitude)
-#' response   = c("rating", "complaints"),
-#' predictors = c("privileges", "learning")
+#' response   = c("rating", "complaints", "advance")
+#' predictors = c("privileges", "learning", "raises", "critical")
 #' b      <- partition(S0,
 #'                     part1 = response,
 #'                     part2 = predictors)
