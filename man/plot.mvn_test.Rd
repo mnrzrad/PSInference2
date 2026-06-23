@@ -15,7 +15,6 @@
 Invisibly returns \code{x}.
 }
 \description{
-Re-draws the chi-square Q-Q diagnostic. For the full
-  histogram panel, call \code{mvn_test(X, plot = TRUE)} on the
-  original data directly.
+Re-draws the chi-square Q-Q diagnostic. For the full histogram panel,
+call \code{mvn_test(X, plot = TRUE)} on the original data directly.
 }

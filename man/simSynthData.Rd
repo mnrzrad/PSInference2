@@ -56,11 +56,11 @@ The stacked representation is statistically justified because all
 given the original data. Thus, the stacked sufficient statistic
 \eqn{\mathbf{S}^\star_{\mathrm{M}}} satisfies
 \deqn{
-  \mathbf{S}^\star_{\mathrm{M}} \mid \mathbf{S}
+  (n - 1)\mathbf{S}^\star_{\mathrm{M}} \mid \mathbf{S}
   \sim
   \mathcal{W}_p\!\left(
-    Mn - 1,\;
-    \frac{1}{n - 1}\mathbf{S}
+    \mathbf{S},\;
+    Mn - 1
   \right).
 }
 }

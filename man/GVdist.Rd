@@ -2,7 +2,7 @@
 % Please edit documentation in R/null_distributions.R
 \name{GVdist}
 \alias{GVdist}
-\title{Simulate the Generalised Variance Null Distribution}
+\title{Simulate the Generalized Variance Null Distribution}
 \usage{
 GVdist(nsample, pvariates, iterations = 10000L, M = 1L)
 }
@@ -11,50 +11,66 @@ GVdist(nsample, pvariates, iterations = 10000L, M = 1L)
 
 \item{pvariates}{Number of variables \eqn{p}.}
 
-\item{iterations}{Number of Monte Carlo draws (default 10000).}
+\item{iterations}{Number of Monte Carlo draws. The default is
+\code{10000L}.}
 
-\item{M}{Number of synthetic releases (default \code{1L}).
+\item{M}{Number of synthetic releases. The default is \code{1L}.
 The effective sample size is \eqn{N = Mn}.}
 }
 \value{
-A numeric vector of length \code{iterations} containing
-  draws from the null distribution of \eqn{T_1^\star}.
+A numeric vector of length \code{iterations} containing draws from the
+null distribution of \eqn{T_1^\star}.
 }
 \description{
-Simulates the null distribution of the generalised variance
-pivotal statistic \eqn{T_1^\star} under plug-in sampling.
+Simulates the null distribution of the generalized variance pivotal
+statistic \eqn{T_1^\star} under plug-in sampling.
 
 Under the multiple-release stacking result,
-\eqn{\mathbf{S}^\star_{\mathrm{complete}} \mid \mathbf{S}
-\sim \mathcal{W}_p(Mn-1, \mathbf{S}/(n-1))},
-the Bartlett decomposition gives:
 \deqn{
-  T_1^\star = (n-1)^p \frac{|\mathbf{S}^\star|}{|\Sigma|}
-  \;\overset{d}{=}\;
-  \Bigl(\prod_{j=1}^p A_j\Bigr)\Bigl(\prod_{j=1}^p B_j\Bigr),
+  \mathbf{S}^\star_{\mathrm{M}} \mid \mathbf{S}
+  \sim
+  \mathcal{W}_p\left(
+    Mn - 1,\;
+    \frac{\mathbf{S}}{n - 1}
+  \right),
 }
-where \eqn{A_j \sim \chi^2_{Mn-j}} (from the synthetic Wishart,
-degrees of freedom \eqn{Mn-1}) and \eqn{B_j \sim \chi^2_{n-j}}
-(from the original sample Wishart, degrees of freedom \eqn{n-1}),
-all \eqn{2p} variables mutually independent.
-For \eqn{M = 1} we have \eqn{A_j \overset{d}{=} B_j \sim
-\chi^2_{n-j}}, recovering the single-release result of
-Klein et al. (2021).
+the Bartlett decomposition gives
+\deqn{
+  T_1^\star
+  =
+  (n-1)^p \frac{|\mathbf{S}^\star|}{|\Sigma|}
+  \;\overset{d}{=}\;
+  \left(\prod_{j=1}^p A_j\right)
+  \left(\prod_{j=1}^p B_j\right),
+}
+where \eqn{A_j \sim \chi^2_{Mn-j}} comes from the synthetic Wishart
+distribution with degrees of freedom \eqn{Mn - 1}, and
+\eqn{B_j \sim \chi^2_{n-j}} comes from the original-sample Wishart
+distribution with degrees of freedom \eqn{n - 1}. All \eqn{2p}
+variables are mutually independent.
+
+For \eqn{M = 1}, \eqn{A_j} and \eqn{B_j} have the same
+\eqn{\chi^2_{n-j}} distribution, recovering the single-release result
+of Klein et al. (2021).
 }
 \examples{
 set.seed(1)
-# Single release (M = 1)
-nd1 <- GVdist(nsample = 50, pvariates = 4)
-quantile(nd1, probs = c(0.025, 0.975))
 
-# Five releases (M = 5): A_j ~ chi2_{250-j}, B_j ~ chi2_{50-j}
-nd5 <- GVdist(nsample = 50, pvariates = 4, M = 5)
-quantile(nd5, probs = c(0.025, 0.975))  # narrower
+\donttest{
+# Single release
+nd1 <- GVdist(nsample = 50, pvariates = 4, M = 1, iterations = 1000L)
+stats::quantile(nd1, probs = c(0.025, 0.975))
+
+# Five releases
+nd5 <- GVdist(nsample = 50, pvariates = 4, M = 5, iterations = 1000L)
+stats::quantile(nd5, probs = c(0.025, 0.975))
+}
 }
 \references{
 Klein, M., Moura, R., and Sinha, B. (2021). Multivariate normal
 inference based on singly imputed synthetic data under plug-in
-sampling. \emph{Sankhya B}, 83, 273--287.
+sampling. \emph{Sankhya B}, \strong{83}, 273--287.
+\doi{10.1007/s13571-019-00215-9}
 }
 \seealso{
 \code{\link{gv_test}}

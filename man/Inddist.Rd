@@ -7,36 +7,49 @@
 Inddist(part, nsample, pvariates, iterations = 10000L, M = 1L)
 }
 \arguments{
-\item{part}{Size of the first variable block \eqn{p_1}.}
+\item{part}{Size of the first variable block, \eqn{p_1}.}
 
 \item{nsample}{Original sample size \eqn{n}.}
 
-\item{pvariates}{Total number of variables \eqn{p}.}
+\item{pvariates}{Total number of variables, \eqn{p}.}
 
-\item{iterations}{Number of Monte Carlo draws (default 10000).}
+\item{iterations}{Number of Monte Carlo draws. The default is
+\code{10000L}.}
 
-\item{M}{Number of synthetic releases (default \code{1L}).}
+\item{M}{Number of synthetic releases. The default is \code{1L}.}
 }
 \value{
-Numeric vector of length \code{iterations}.
+A numeric vector of length \code{iterations}.
 }
 \description{
 Simulates the null distribution of the independence pivotal statistic
 \eqn{T_3^\star} under plug-in sampling for \eqn{M \geq 1} releases.
 
-Under the stacking result the compound Wishart representation gives:
+Under the stacking result, the compound Wishart representation gives
 \deqn{
-  T_3^\star \overset{d}{=}
-  \frac{|\Omega_2|}{|\Omega_{2,11}||\Omega_{2,22}|},
+  T_3^\star
+  \overset{d}{=}
+  \frac{|\Omega_2|}
+       {|\Omega_{2,11}| |\Omega_{2,22}|},
 }
-where \eqn{\Omega_1 \sim \mathcal{W}_p(n-1,\,I_p)} (df \eqn{n-1})
-and \eqn{\Omega_2 \mid \Omega_1 \sim \mathcal{W}_p(Mn-1,\,(n-1)^{-1}\Omega_1)}
-(df \eqn{Mn-1}).
+where
+\eqn{\Omega_1 \sim \mathcal{W}_p(n - 1, I_p)} and
+\eqn{\Omega_2 \mid \Omega_1
+\sim
+\mathcal{W}_p(Mn - 1,\,(n - 1)^{-1}\Omega_1)}.
 }
 \examples{
 set.seed(1)
-Inddist(part = 2, nsample = 50, pvariates = 4, M = 1) |> quantile(0.05)
-Inddist(part = 2, nsample = 50, pvariates = 4, M = 5) |> quantile(0.05)
+
+\donttest{
+nd1 <- Inddist(part = 2, nsample = 50, pvariates = 4,
+               M = 1, iterations = 1000L)
+stats::quantile(nd1, probs = 0.05)
+
+nd5 <- Inddist(part = 2, nsample = 50, pvariates = 4,
+               M = 5, iterations = 1000L)
+stats::quantile(nd5, probs = 0.05)
+}
 }
 \seealso{
 \code{\link{independence_test}}

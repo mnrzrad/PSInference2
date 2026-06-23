@@ -7,65 +7,68 @@
 mvn_test(X, alpha = 0.05, plot = TRUE, hz_nsim = 2000L, verbose = TRUE)
 }
 \arguments{
-\item{X}{A numeric matrix or data frame (\eqn{n \times p}).}
+\item{X}{A numeric matrix or data frame with dimension \eqn{n \times p}.}
 
-\item{alpha}{Significance level for all tests (default \code{0.05}).}
+\item{alpha}{Significance level for all tests. The default is \code{0.05}.}
 
-\item{plot}{Logical. If \code{TRUE} (default), produces the
-diagnostic plot panel.}
+\item{plot}{Logical. If \code{TRUE}, the default, a diagnostic plot
+panel is produced.}
 
 \item{hz_nsim}{Integer. Number of Monte Carlo draws used to
-calibrate the Henze-Zirkler null distribution (default
-\code{2000L}). Increase for more accurate $p$-values at the
-cost of computation time.}
+calibrate the Henze-Zirkler null distribution. The default is \code{2000L}.
+Increasing this value gives more accurate \eqn{p}-values at the cost
+of additional computation time.}
 
-\item{verbose}{Logical. If \code{TRUE} (default), prints a
-formatted summary of all test results.}
+\item{verbose}{Logical. If \code{TRUE}, the default, a formatted summary of
+all test results is printed.}
 }
 \value{
-A list of class \code{mvn_test} (invisibly) with components:
+A list of class \code{mvn_test}, returned invisibly, with components:
 \describe{
   \item{shapiro}{Data frame of per-variable Shapiro-Wilk statistics
     and $p$-values.}
-  \item{mardia_skewness}{Named list: \code{statistic}, \code{df},
+  \item{mardia_skewness}{Named list with components \code{statistic},
+       \code{df}, \code{p.value}, and \code{decision}.}
+  \item{mardia_kurtosis}{Named list with components \code{statistic},
     \code{p.value}, \code{decision}.}
-  \item{mardia_kurtosis}{Named list: \code{statistic},
-    \code{p.value}, \code{decision}.}
-  \item{henze_zirkler}{Named list: \code{statistic},
-    \code{p.value}, \code{decision}.}
-  \item{royston}{Named list: \code{statistic} (H),
-    \code{df} (effective df), \code{p.value}, \code{decision}.}
+  \item{henze_zirkler}{Named list Named list with components
+      \code{statistic}, \code{p.value}, \code{decision}.}
+  \item{royston}{Named list Named list with components \code{statistic}, the
+       Royston \eqn{H} statistic; \code{df}, the effective degrees of freedom;
+       \code{p.value}, and \code{decision}.}
   \item{mahal_distances}{Numeric vector of squared Mahalanobis
     distances.}
-  \item{overall}{Character. Overall conclusion based on all tests.}
+  \item{overall}{Character string giving the overall conclusion based on
+    all tests.}
 }
 }
 \description{
-Assesses multivariate normality of a dataset using five
-complementary approaches: (1) univariate Shapiro-Wilk tests on each
-variable, (2) Mardia's multivariate skewness test, (3) Mardia's
-multivariate kurtosis test, (4) the Henze-Zirkler omnibus test, and
-(5) the Royston multivariate extension of the Shapiro-Wilk test.
-A visual diagnostic panel shows one histogram with fitted normal
-curve per variable and a chi-square Q-Q plot of squared Mahalanobis
-distances.
+Assesses multivariate normality of a data set using five complementary
+approaches: (1) univariate Shapiro-Wilk tests on each variable,
+(2) Mardia's multivariate skewness test, (3) Mardia's multivariate
+kurtosis test, (4) the Henze-Zirkler omnibus test, and (5) Royston's
+multivariate extension of the Shapiro-Wilk test. A visual diagnostic
+panel shows one histogram with a fitted normal curve for each variable
+and a chi-square Q-Q plot of squared Mahalanobis distances.
 }
 \details{
-\strong{Mardia's skewness} (\eqn{H_0}: zero multivariate skewness):
-\deqn{
-  \kappa = \frac{n}{6} b_{1,p} \sim \chi^2\!\Bigl(
-  \frac{p(p+1)(p+2)}{6}\Bigr), \quad
-  b_{1,p} = n^{-2}\textstyle\sum_{i,j} d_{ij}^3.
-}
+\strong{Mardia's skewness test} evaluates the null hypothesis of zero
+ multivariate skewness:
+ \deqn{
+   \kappa = \frac{n}{6} b_{1,p} \sim \chi^2\!\Bigl(
+      \frac{p(p+1)(p+2)}{6}\Bigr), \quad
+       b_{1,p} = n^{-2}\textstyle\sum_{i,j} d_{ij}^3.
+ }
 
-\strong{Mardia's kurtosis} (\eqn{H_0}: kurtosis equals \eqn{p(p+2)}):
+\strong{Mardia's kurtosis} evaluates whether the multivariate kurtosis
+equals \eqn{p(p+2)}:
 \deqn{
   z = \frac{b_{2,p} - p(p+2)}{\sqrt{8p(p+2)/n}} \sim N(0,1), \quad
   b_{2,p} = n^{-1}\textstyle\sum_i d_{ii}^2.
 }
 
-\strong{Henze-Zirkler} (omnibus; Henze and Zirkler, 1990): based on
-a weighted \eqn{L^2} distance between the empirical and theoretical
+\strong{The Henze-Zirkler omnibus test} is based on a weighted
+\eqn{L^2} distance between the empirical and theoretical
 multivariate normal characteristic functions. The statistic is
 \deqn{
   \mathrm{HZ} = \frac{1}{n}\sum_{i=1}^n\sum_{j=1}^n
@@ -74,51 +77,58 @@ multivariate normal characteristic functions. The statistic is
     e^{-\frac{\beta^2}{2(1+\beta^2)}d_i^2}
   + (1+2\beta^2)^{-p/2},
 }
-where \eqn{\beta = (1/\sqrt{2}) \bigl[(2p+1)/4\bigr]^{1/(p+4)}
-n^{1/(p+4)}}. The null distribution of \eqn{\mathrm{HZ}} is
+where
+\deqn{
+   \beta =
+     \frac{1}{\sqrt{2}}
+       \left(\frac{2p+1}{4}\right)^{1/(p+4)}
+       n^{1/(p+4)}.
+}
+The null distribution of \eqn{\mathrm{HZ}} is
 approximated by a log-normal distribution whose parameters are
 estimated by Monte Carlo simulation of size \code{hz_nsim} from
 \eqn{\mathcal{N}_p(\bm{0}, \bm{I}_p)}. This test is particularly
-powerful against heavy-tailed and skewed alternatives.
+powerful useful against heavy-tailed and skewed alternatives.
 
-\strong{Royston's H test} (Royston, 1992): extends the univariate
-Shapiro-Wilk statistic to the multivariate setting. For each
-variable, the Shapiro-Wilk \eqn{p}-value \eqn{p_j} is transformed
-to \eqn{Z_j = \Phi^{-1}(1 - p_j)}. The test statistic is
+\strong{Royston's H test} extends the univariate Shapiro-Wilk statistic
+to the multivariate setting. For each variable, the Shapiro-Wilk
+\eqn{p}-value \eqn{p_j} is transformed to \eqn{Z_j = \Phi^{-1}(1 - p_j)}.
+The test statistic is
 \deqn{
   H = e^{-1} \sum_{j=1}^p Z_j^2 \sim \chi^2_e,
 }
 where \eqn{e = p / \bigl[1 + (p-1)\hat\rho_z\bigr]} is an effective
-degree of freedom that accounts for the correlation among the
-\eqn{Z_j} values, estimated from the average squared pairwise
-correlation \eqn{\hat\rho_z} of the original variables.
+degree of freedom parameter that accounts for correlation among the
+\eqn{Z_j} values. The quantity \eqn{\hat\rho_z} estimated from the average
+squared pairwise correlation \eqn{\hat\rho_z} of the original variables.
 
-\strong{Diagnostic panel:} \eqn{p + 1} panels in a grid.
-The first \eqn{p} panels show histograms with fitted
-\eqn{\mathcal{N}(\bar{x}_j, s_j^2)} density curves; bar colour is
-steel-blue when Shapiro-Wilk fails to reject and tomato-red when it
-rejects. The final panel shows the chi-square Q-Q plot of squared
+\strong{Diagnostic panel:} The diagnostic panel contains \eqn{p + 1} plots
+arranged in a grid. The first \eqn{p} panels show histograms with fitted
+\eqn{\mathcal{N}(\bar{x}_j, s_j^2)} density curves. The bar color is
+steel-blue when the Shapiro-Wilk test fails to reject normality and tomato-red
+when it rejects. The final panel shows the chi-square Q-Q plot of squared
 Mahalanobis distances.
 }
 \examples{
-data(ps_attitude)
-mvn_test(ps_attitude)
+data(attitude)
+mvn_test(attitude)
 
-data(ps_mtcars)
-mvn_test(ps_mtcars)
+data(mtcars)
+mvn_test(mtcars)
 }
 \references{
 Mardia, K. V. (1970). Measures of multivariate skewness and kurtosis
-with applications. \emph{Biometrika}, 57, 519--530.
+with applications. \emph{Biometrika}, \strong{57}, 519--530.
 
-Henze, N. and Zirkler, B. (1990). A class of invariant consistent
-tests for multivariate normality. \emph{Communications in
-Statistics -- Theory and Methods}, 19, 3595--3617.
+Henze, N. and Zirkler, B. (1990). A class of invariant consistent tests for
+multivariate normality. \emph{Communications in Statistics: Theory
+and Methods}, \strong{19}, 3595--3617.
 
-Royston, J. P. (1992). Approximating the Shapiro-Wilk W-test for
-non-normality. \emph{Statistics and Computing}, 2, 117--119.
+Royston, J. P. (1992). Approximating the Shapiro-Wilk W test for
+non-normality. \emph{Statistics and Computing}, \strong{2}, 117--119.
 }
 \seealso{
-\code{\link{simSynthData}}, \code{\link{ps_attitude}},
-  \code{\link{ps_mtcars}}
+\code{\link{simSynthData}},
+\code{\link{ps_attitude}},
+\code{\link{ps_mtcars}}
 }

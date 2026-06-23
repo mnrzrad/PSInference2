@@ -2,36 +2,52 @@
 % Please edit documentation in R/null_distributions.R
 \name{canodist}
 \alias{canodist}
-\title{Simulate the Regression Canonical Null Distribution}
+\title{Simulate the Canonical Regression Null Distribution}
 \usage{
 canodist(part, nsample, pvariates, iterations = 10000L, M = 1L)
 }
 \arguments{
-\item{part}{Size of the first variable block \eqn{p_1}
-(\eqn{p_1 \leq p_2}).}
+\item{part}{Size of the first variable block, \eqn{p_1}. Must satisfy
+\eqn{p_1 \leq p_2}.}
 
 \item{nsample}{Original sample size \eqn{n}.}
 
-\item{pvariates}{Total number of variables \eqn{p}.}
+\item{pvariates}{Total number of variables, \eqn{p}.}
 
-\item{iterations}{Number of Monte Carlo draws (default 10000).}
+\item{iterations}{Number of Monte Carlo draws. The default is
+\code{10000L}.}
 
-\item{M}{Number of synthetic releases (default \code{1L}).}
+\item{M}{Number of synthetic releases. The default is \code{1L}.}
 }
 \value{
-Numeric vector of length \code{iterations}.
+A numeric vector of length \code{iterations}.
 }
 \description{
 Simulates the null distribution of the regression pivotal statistic
 \eqn{T_4^\star} under plug-in sampling for \eqn{M \geq 1} releases.
 
-Same compound Wishart structure as \code{\link{Inddist}}:
-\eqn{\Omega_1 \sim \mathcal{W}_p(n-1,\,I_p)} and
-\eqn{\Omega_2 \mid \Omega_1 \sim \mathcal{W}_p(Mn-1,\,(n-1)^{-1}\Omega_1)}.
+The simulation uses the same compound Wishart structure as
+\code{\link{Inddist}}:
+\deqn{
+  \Omega_1 \sim \mathcal{W}_p(n - 1, I_p),
+  \qquad
+  \Omega_2 \mid \Omega_1
+  \sim
+  \mathcal{W}_p(Mn - 1,\,(n - 1)^{-1}\Omega_1).
+}
 }
 \examples{
 set.seed(1)
-canodist(part = 2, nsample = 50, pvariates = 4, M = 1) |> quantile(0.95)
+
+\donttest{
+nd1 <- canodist(part = 2, nsample = 50, pvariates = 4,
+                M = 1, iterations = 1000L)
+stats::quantile(nd1, probs = 0.95)
+
+nd5 <- canodist(part = 2, nsample = 50, pvariates = 4,
+                M = 5, iterations = 1000L)
+stats::quantile(nd5, probs = 0.95)
+}
 canodist(part = 2, nsample = 50, pvariates = 4, M = 5) |> quantile(0.95)
 }
 \seealso{
