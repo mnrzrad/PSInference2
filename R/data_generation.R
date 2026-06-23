@@ -51,8 +51,8 @@
 #'   \mathbf{S}^\star_{\mathrm{M}} \mid \mathbf{S}
 #'   \sim
 #'   \mathcal{W}_p\!\left(
-#'     Mn - 1,\;
-#'     \frac{1}{n - 1}\mathbf{S}
+#'     \frac{1}{n - 1}\mathbf{S},\;
+#'     Mn - 1
 #'   \right).
 #' }
 #'
