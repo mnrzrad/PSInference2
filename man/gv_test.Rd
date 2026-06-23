@@ -2,55 +2,68 @@
 % Please edit documentation in R/inference_functions.R
 \name{gv_test}
 \alias{gv_test}
-\title{Generalised Variance Test and Confidence Interval}
+\title{Generalized Variance Test and Confidence Interval}
 \usage{
 gv_test(V, M = 1L, Sigma, alpha = 0.05, iterations = 10000L, null_dist = NULL)
 }
 \arguments{
-\item{V}{Stacked synthetic dataset (\eqn{Mn \times p} matrix),
-as returned by \code{\link{simSynthData}}.}
+\item{V}{Stacked synthetic data set, given as an \eqn{Mn \times p}
+numeric matrix, as returned by \code{\link{simSynthData}}.}
 
-\item{M}{Positive integer. Number of synthetic releases
-(default \code{1L}).}
+\item{M}{Positive integer giving the number of synthetic releases.
+The default is \code{1L}.}
 
 \item{Sigma}{A \eqn{p \times p} positive-definite matrix specifying
-the null value \eqn{\Sigma_0}. Typically \code{cov(X)}.}
+the null covariance matrix \eqn{\Sigma_0}. Typically, this is
+\code{cov(X)}, where \code{X} is the original data matrix.}
 
-\item{alpha}{Significance level (default \code{0.05}).}
+\item{alpha}{Significance level. The default is \code{0.05}.}
 
-\item{iterations}{Monte Carlo sample size (default \code{10000L}).}
+\item{iterations}{Monte Carlo sample size used to approximate the
+null distribution. The default is \code{10000L}.}
+
+\item{null_dist}{Optional numeric vector containing a precomputed null
+distribution. If supplied, \code{iterations} is ignored.}
 }
 \value{
 An object of class \code{\link{ps_test}} with component
-  \code{conf.int} giving the exact \eqn{(1-\alpha)} CI for
-  \eqn{|\Sigma|}. All S3 methods (\code{print}, \code{summary},
-  \code{plot}) are available.
+\code{conf.int} giving the exact \eqn{(1-\alpha)} confidence interval for
+\eqn{|\Sigma|}. The usual S3 methods, including \code{print},
+\code{summary}, and \code{plot}, are available.
 }
 \description{
-Tests \eqn{H_0 : |\Sigma| = |\Sigma_0|} and computes an exact
-\eqn{(1-\alpha)}-level confidence interval for the generalised
-variance \eqn{|\Sigma|}, based on \eqn{M} released plug-in
-sampling synthetic datasets stacked into \code{V}.
-Setting \code{M = 1} recovers the single-release procedure of
-Klein et al. (2021).
+Tests \eqn{H_0 : |\Sigma| = |\Sigma_0|} and computes a
+\eqn{(1-\alpha)}-level confidence interval for the generalized
+variance \eqn{|\Sigma|}, based on \eqn{M} released plug-in sampling
+synthetic data sets stacked into \code{V}. Setting \code{M = 1}
+recovers the single-release procedure of Klein et al. (2021).
 }
 \examples{
-data(ps_attitude)
+data(attitude)
+
 set.seed(1)
-V1 <- simSynthData(ps_attitude)
-res <- gv_test(V1, M = 1, Sigma = cov(ps_attitude))
+V1 <- simSynthData(attitude)
+
+\donttest{
+res <- gv_test(V1, M = 1, Sigma = cov(attitude),
+               iterations = 1000L)
 print(res)
 plot(res)
 
-V5 <- simSynthData(ps_attitude, M = 5)
-gv_test(V5, M = 5, Sigma = cov(ps_attitude))
+set.seed(1)
+V5 <- simSynthData(attitude, M = 5)
+gv_test(V5, M = 5, Sigma = cov(attitude),
+        iterations = 1000L)
+}
 }
 \references{
 Klein, M., Moura, R., and Sinha, B. (2021). Multivariate normal
 inference based on singly imputed synthetic data under plug-in
-sampling. \emph{Sankhya B}, 83, 273--287.
+sampling. \emph{Sankhya B}, \strong{83}, 273--287.
+\doi{10.1007/s13571-019-00215-9}
 }
 \seealso{
-\code{\link{GVdist}}, \code{\link{ps_test}},
-  \code{\link{simSynthData}}
+\code{\link{GVdist}},
+\code{\link{ps_test}},
+\code{\link{simSynthData}}
 }

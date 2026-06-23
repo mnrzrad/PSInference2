@@ -2,23 +2,28 @@
 % Please edit documentation in R/inference_functions.R
 \name{gv_ci}
 \alias{gv_ci}
-\title{Generalised Variance (alias for \code{gv_test})}
+\title{Generalized Variance Confidence Interval}
 \usage{
 gv_ci(V, M = 1L, Sigma, alpha = 0.05, iterations = 10000L, null_dist = NULL)
 }
 \arguments{
-\item{V}{Stacked synthetic dataset (\eqn{Mn \times p} matrix),
-as returned by \code{\link{simSynthData}}.}
+\item{V}{Stacked synthetic data set, given as an \eqn{Mn \times p}
+numeric matrix, as returned by \code{\link{simSynthData}}.}
 
-\item{M}{Positive integer. Number of synthetic releases
-(default \code{1L}).}
+\item{M}{Positive integer giving the number of synthetic releases.
+The default is \code{1L}.}
 
 \item{Sigma}{A \eqn{p \times p} positive-definite matrix specifying
-the null value \eqn{\Sigma_0}. Typically \code{cov(X)}.}
+the null covariance matrix \eqn{\Sigma_0}. Typically, this is
+\code{cov(X)}, where \code{X} is the original data matrix.}
 
-\item{alpha}{Significance level (default \code{0.05}).}
+\item{alpha}{Significance level. The default is \code{0.05}.}
 
-\item{iterations}{Monte Carlo sample size (default \code{10000L}).}
+\item{iterations}{Monte Carlo sample size used to approximate the
+null distribution. The default is \code{10000L}.}
+
+\item{null_dist}{Optional numeric vector containing a precomputed null
+distribution. If supplied, \code{iterations} is ignored.}
 }
 \description{
 Backward-compatible alias for \code{\link{gv_test}}.

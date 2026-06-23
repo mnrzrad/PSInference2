@@ -16,63 +16,81 @@ independence_test(
 )
 }
 \arguments{
-\item{V}{Stacked synthetic dataset (\eqn{Mn \times p} matrix).}
+\item{V}{Stacked synthetic data set, given as an \eqn{Mn \times p}
+numeric matrix.}
 
-\item{M}{Positive integer. Number of synthetic releases
-(default \code{1L}).}
+\item{M}{Positive integer giving the number of synthetic releases.
+The default is \code{1L}.}
 
-\item{part}{Integer scalar. Size of Block 1 (first \code{part}
-columns). Ignored when \code{group_a}/\code{group_b} are supplied.}
+\item{part}{Integer scalar giving the size of Block 1. The first
+\code{part} columns form Block 1, and the remaining columns form
+Block 2. Ignored when \code{group_a} and \code{group_b} are supplied.}
 
 \item{group_a}{Integer indices or column names identifying Block 1.}
 
 \item{group_b}{Integer indices or column names identifying Block 2.
-Together with \code{group_a} must cover all columns.}
+Together with \code{group_a}, these must cover all columns.}
 
-\item{alpha}{Significance level (default \code{0.05}).}
+\item{alpha}{Significance level. The default is \code{0.05}.}
 
-\item{iterations}{Monte Carlo sample size (default \code{10000L}).}
+\item{iterations}{Monte Carlo sample size used to approximate the
+null distribution. The default is \code{10000L}.}
+
+\item{null_dist}{Optional numeric vector containing a precomputed null
+distribution. If supplied, \code{iterations} is ignored.}
 }
 \value{
-An object of class \code{\link{ps_test}}. The null hypothesis
-  string in \code{$null.value} names the two blocks explicitly.
+An object of class \code{\link{ps_test}}. The null hypothesis string
+in \code{$null.value} names the two blocks explicitly.
 }
 \description{
-Tests \eqn{H_0 : \Sigma_{12} = \mathbf{0}} (independence between two
-subsets of variables) based on \eqn{M} released plug-in sampling
-synthetic datasets stacked into \code{V}. Setting \code{M = 1}
-recovers Klein et al. (2021).
+Tests \eqn{H_0 : \Sigma_{12} = \mathbf{0}}, that is, independence
+between two subsets of variables, based on \eqn{M} released plug-in
+sampling synthetic data sets stacked into \code{V}. Setting
+\code{M = 1} recovers the single-release procedure of Klein et al.
+(2021).
 
-The two variable blocks can be specified in two ways (exactly one
-must be used):
+The two variable blocks can be specified in exactly one of two ways:
 \describe{
-  \item{\code{part} (integer scalar)}{First \code{part} columns
-    form Block 1; remaining columns form Block 2. Original interface;
-    backward-compatible.}
-  \item{\code{group_a} and \code{group_b}}{Integer indices \emph{or}
-    column names identifying each block. Together they must cover all
-    columns of \code{V} exactly. \code{V} must have \code{colnames}
-    when names are used.}
+  \item{\code{part}}{
+    An integer scalar. The first \code{part} columns form Block 1, and
+    the remaining columns form Block 2. This is the original
+    backward-compatible interface.
+  }
+  \item{\code{group_a} and \code{group_b}}{
+    Integer indices or column names identifying the two blocks. Together,
+    they must cover all columns of \code{V} exactly once. If names are
+    used, \code{V} must have column names.
+  }
 }
 }
 \examples{
-data(ps_attitude)
+data(attitude)
+
 set.seed(1)
-V5 <- simSynthData(ps_attitude, M = 5)
+V5 <- simSynthData(attitude, M = 5)
 
-## Integer interface
-independence_test(V5, M = 5, part = 2L)
+\donttest{
+# Integer interface
+independence_test(V5, M = 5, part = 2L, iterations = 1000L)
 
-## Named interface: shows variable names in output
-independence_test(V5, M = 5,
-                  group_a = c("rating", "complaints"),
-                  group_b = c("privileges", "learning"))
+# Named interface
+independence_test(
+  V5,
+  M = 5,
+  group_a = c("rating", "complaints"),
+  group_b = c("privileges", "learning"),
+  iterations = 1000L
+)
+}
 }
 \references{
 Klein, M., Moura, R., and Sinha, B. (2021). Multivariate normal
 inference based on singly imputed synthetic data under plug-in
-sampling. \emph{Sankhya B}, 83, 273--287.
+sampling. \emph{Sankhya B}, \strong{83}, 273--287.
+\doi{10.1007/s13571-019-00215-9}
 }
 \seealso{
-\code{\link{Inddist}}, \code{\link{ps_test}}
+\code{\link{Inddist}},
+\code{\link{ps_test}}
 }

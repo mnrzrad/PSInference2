@@ -17,76 +17,99 @@ regression_test(
 )
 }
 \arguments{
-\item{V}{Stacked synthetic dataset (\eqn{Mn \times p} matrix).}
+\item{V}{Stacked synthetic data set, given as an \eqn{Mn \times p}
+numeric matrix.}
 
-\item{M}{Positive integer. Number of synthetic releases
-(default \code{1L}).}
+\item{M}{Positive integer giving the number of synthetic releases.
+The default is \code{1L}.}
 
-\item{part}{Integer scalar. Size of the response block (Block 1,
-first \code{part} columns). Must satisfy \eqn{p_1 \leq p_2}.
-Ignored when \code{response}/\code{predictors} are supplied.}
+\item{part}{Integer scalar giving the size of the response block.
+The first \code{part} columns form the response block, and the
+remaining columns form the predictor block. Must satisfy
+\eqn{p_1 \leq p_2}. Ignored when \code{response} and
+\code{predictors} are supplied.}
 
 \item{Delta0}{A \eqn{p_1 \times p_2} matrix giving the null value
-\eqn{\Delta_0}. Default is the zero matrix (test of zero
-regression).}
+\eqn{\Delta_0}. The default is the zero matrix, corresponding to a
+test of zero regression.}
 
 \item{response}{Integer or character vector identifying the response
-block (Block 1).}
+block.}
 
-\item{predictors}{Integer or character vector identifying the
-predictor block (Block 2). Together with \code{response} must
-cover all columns.}
+\item{predictors}{Integer or character vector identifying the predictor
+block. Together with \code{response}, these must cover all columns.}
 
-\item{alpha}{Significance level (default \code{0.05}).}
+\item{alpha}{Significance level. The default is \code{0.05}.}
 
-\item{iterations}{Monte Carlo sample size (default \code{10000L}).}
+\item{iterations}{Monte Carlo sample size used to approximate the
+null distribution. The default is \code{10000L}.}
+
+\item{null_dist}{Optional numeric vector containing a precomputed null
+distribution. If supplied, \code{iterations} is ignored.}
 }
 \value{
-An object of class \code{\link{ps_test}}. Component
-  \code{Delta.hat} gives the plug-in slope estimator
-  \eqn{\hat\Delta = S_{12}^\star (S_{22}^\star)^{-1}}.
-  The null hypothesis string in \code{$null.value} names both blocks.
+An object of class \code{\link{ps_test}}. Component \code{Delta.hat}
+gives the plug-in slope estimator
+\eqn{\hat\Delta = S_{12}^\star (S_{22}^\star)^{-1}}.
+The null hypothesis string in \code{$null.value} names both blocks.
 }
 \description{
 Tests \eqn{H_0 : \Delta = \Delta_0} for the population regression
 matrix \eqn{\Delta = \Sigma_{12}\Sigma_{22}^{-1}}, based on \eqn{M}
-released plug-in sampling synthetic datasets stacked into \code{V}.
-Requires \eqn{p_1 \leq p_2}.
-Setting \code{M = 1} recovers Klein et al. (2021).
+released plug-in sampling synthetic data sets stacked into \code{V}.
+The test requires \eqn{p_1 \leq p_2}. Setting \code{M = 1} recovers
+the single-release procedure of Klein et al. (2021).
 
-The two variable blocks can be specified in two ways (exactly one
-must be used):
+The two variable blocks can be specified in exactly one of two ways:
 \describe{
-  \item{\code{part} (integer scalar)}{First \code{part} columns are
-    the response block (Block 1); remaining columns are the predictor
-    block (Block 2). Original interface; backward-compatible.}
-  \item{\code{response} and \code{predictors}}{Integer indices
-    \emph{or} column names identifying the response and predictor
-    blocks. Together they must cover all columns of \code{V}.}
+  \item{\code{part}}{
+    An integer scalar. The first \code{part} columns form the response
+    block, and the remaining columns form the predictor block. This is
+    the original backward-compatible interface.
+  }
+  \item{\code{response} and \code{predictors}}{
+    Integer indices or column names identifying the response and
+    predictor blocks. Together, they must cover all columns of
+    \code{V} exactly once.
+  }
 }
 }
 \examples{
-data(ps_attitude)
+data(attitude)
+
 set.seed(1)
-V5 <- simSynthData(ps_attitude, M = 5)
+V5 <- simSynthData(attitude, M = 5)
 
-## Integer interface (zero regression)
-regression_test(V5, M = 5, part = 2L)
+\donttest{
+# Integer interface: zero regression
+regression_test(V5, M = 5, part = 2L, iterations = 1000L)
 
-## Named interface with true Delta0 (should fail to reject)
-b      <- partition(cov(ps_attitude),
-                    part1 = c("rating", "complaints"))
+# Named interface with Delta0 estimated from the original data
+S0 <- cov(attitude)
+response   = c("rating", "complaints"),
+predictors = c("privileges", "learning")
+b      <- partition(S0,
+                    part1 = response,
+                    part2 = predictors)
 Delta0 <- b$B \%*\% solve(b$D)
-regression_test(V5, M = 5,
-                 response   = c("rating", "complaints"),
-                 predictors = c("privileges", "learning"),
-                 Delta0     = Delta0)
+
+regression_test(
+  V5,
+  M = 5,
+  response = response,
+  predictors = predictors,
+  Delta0 = Delta0,
+  iterations = 1000L
+)
+}
 }
 \references{
 Klein, M., Moura, R., and Sinha, B. (2021). Multivariate normal
 inference based on singly imputed synthetic data under plug-in
-sampling. \emph{Sankhya B}, 83, 273--287.
+sampling. \emph{Sankhya B}, \strong{83}, 273--287.
+\doi{10.1007/s13571-019-00215-9}
 }
 \seealso{
-\code{\link{canodist}}, \code{\link{ps_test}}
+\code{\link{canodist}},
+\code{\link{ps_test}}
 }
