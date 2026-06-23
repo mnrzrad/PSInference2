@@ -53,8 +53,11 @@
 #'
 #' set.seed(1)
 #' V5 <- simSynthData(attitude, M = 5)
-#' gv_test(V5, M = 5, Sigma = cov(attitude),
+#' res5<-gv_test(V5, M = 5, Sigma = cov(attitude),
 #'         iterations = 1000L)
+#'
+#' print(res5)
+#' plot(res5)
 #' }
 gv_test <- function(V, M = 1L, Sigma,
                     alpha = 0.05,
