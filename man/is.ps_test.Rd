@@ -2,7 +2,7 @@
 % Please edit documentation in R/ps_test_class.R
 \name{is.ps_test}
 \alias{is.ps_test}
-\title{Test if an Object is of Class \code{ps_test}}
+\title{Test Whether an Object Has Class \code{ps_test}}
 \usage{
 is.ps_test(x)
 }
@@ -10,8 +10,20 @@ is.ps_test(x)
 \item{x}{Any R object.}
 }
 \value{
-Logical.
+A logical value: \code{TRUE} if \code{x} inherits from class
+\code{ps_test}, and \code{FALSE} otherwise.
 }
 \description{
-Test if an Object is of Class \code{ps_test}
+Checks whether an object inherits from class \code{ps_test}.
+}
+\examples{
+data(ps_attitude)
+
+set.seed(1)
+V <- simSynthData(ps_attitude, M = 3)
+
+\donttest{
+res <- sphericity_test(V, M = 3, iterations = 1000L)
+is.ps_test(res)
+}
 }

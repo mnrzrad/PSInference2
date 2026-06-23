@@ -13,21 +13,12 @@
 }
 \value{
 Invisibly returns \code{x}.
-
-Invisibly returns \code{x}.
 }
 \description{
-Prints a concise, human-readable summary of the test
-  result stored in a \code{ps_test} object.
-
 Prints a concise, human-readable summary of the test result stored in
 a \code{ps_test} object.
 }
 \examples{
-data(ps_attitude)
-V <- simSynthData(ps_attitude, M = 3)
-res <- sphericity_test(V, M = 3)
-print(res)
 data(ps_attitude)
 
 set.seed(1)

@@ -99,19 +99,6 @@ new_ps_test <- function(statistic,
   )
 }
 
-
-#' @title Print a \code{ps_test} Object
-#' @description Prints a concise, human-readable summary of the test
-#'   result stored in a \code{ps_test} object.
-#' @param x An object of class \code{ps_test}.
-#' @param ... Further arguments (currently ignored).
-#' @return Invisibly returns \code{x}.
-#' @exportS3Method print ps_test
-#' @examples
-#' data(ps_attitude)
-#' V <- simSynthData(ps_attitude, M = 3)
-#' res <- sphericity_test(V, M = 3)
-#' print(res)
 #' @title Print a \code{ps_test} Object
 #'
 #' @description
@@ -384,15 +371,6 @@ plot.ps_test <- function(x,
   x_lo <- x_range[1L] - pad
   x_hi <- x_range[2L] + pad
 
-  # if (!is.na(obs_plot) && is.finite(obs_plot)) {
-  #   x_lo <- min(nd_range[1L] - pad, obs_plot - pad * 0.3)
-  #   x_hi <- max(nd_range[2L] + pad, obs_plot + pad * 0.3)
-  # } else {
-  #   x_lo <- nd_range[1L] - pad
-  #   x_hi <- nd_range[2L] + pad
-  # }
-  # ylim <- c(0, max(d$y) * 1.08)
-
   ylim <- c(0, max(d$y) * 1.08)
 
   ## Title and annotation strings
@@ -599,101 +577,107 @@ plot.ps_test <- function(x,
   invisible(x)
 }
 
-#   ## ---- observed statistic line -----------------------------------------
-#   if (!is.na(obs_plot) && is.finite(obs_plot))
-#     graphics::abline(v = obs_plot, col = stat_col, lwd = 2.2, lty = 2L)
-#
-#   ## ---- critical value line(s) ------------------------------------------
-#   if (!is.na(cl_plot) && is.finite(cl_plot))
-#     graphics::abline(v = cl_plot, col = crit_col, lwd = 1.6, lty = 3L)
-#   if (!is.na(ch_plot) && is.finite(ch_plot))
-#     graphics::abline(v = ch_plot, col = crit_col, lwd = 1.6, lty = 3L)
-#
-#   ## ---- annotation below the plot ---------------------------------------
-#   dec_col <- if (grepl("^Reject", x$decision)) "firebrick" else "darkgreen"
-#
-#   if (multi_panel) {
-#     ## Two compact lines inside the plot's bottom margin
-#     sub1 <- sprintf("%s   |   %s", ann_obs, ann_pval)
-#     sub2 <- sprintf("%s   |   %s", ann_dec, ann_crit)
-#     graphics::mtext(sub1, side = 1L, line = 3.0, cex = 0.65,
-#                     col = "black", font = 1L)
-#     graphics::mtext(sub2, side = 1L, line = 4.0, cex = 0.65,
-#                     col = dec_col, font = 1L)
-#   } else {
-#     ## Four lines in the outer margin (single-panel)
-#     ann  <- list(
-#       list(ann_obs,  stat_col, 2L),
-#       list(ann_pval, "black",  1L),
-#       list(ann_dec,  dec_col,  2L),
-#       list(ann_crit, crit_col, 1L)
-#     )
-#     graphics::par(xpd = NA)
-#     for (k in seq_along(ann))
-#       graphics::mtext(ann[[k]][[1L]],
-#                       side = 1L, outer = TRUE,
-#                       line = (k - 1L) * 1.20 + 0.8,  # start at 0.8, step 1.20
-#                       cex = 0.90, adj = 0.5,
-#                       font = ann[[k]][[3L]],
-#                       col  = ann[[k]][[2L]])
-#   }
-#
-#   invisible(x)
-# }
-
-
-## ------------------------------------------------------------------
-## is / as helpers
-## ------------------------------------------------------------------
-
-#' @title Test if an Object is of Class \code{ps_test}
+#' @title Test Whether an Object Has Class \code{ps_test}
+#'
+#' @description
+#' Checks whether an object inherits from class \code{ps_test}.
+#'
 #' @param x Any R object.
-#' @return Logical.
+#'
+#' @return
+#' A logical value: \code{TRUE} if \code{x} inherits from class
+#' \code{ps_test}, and \code{FALSE} otherwise.
+#'
 #' @export
-is.ps_test <- function(x) inherits(x, "ps_test")
-
-## ------------------------------------------------------------------
-## Internal helpers
-## ------------------------------------------------------------------
-
-#' @keywords internal
-.test_label <- function(test) {
-  switch(test,
-         gv           = "Generalised Variance Test",
-         sphericity   = "Sphericity Test",
-         independence = "Independence Test",
-         regression   = "Regression Test",
-         test)
+#'
+#' @examples
+#' data(ps_attitude)
+#'
+#' set.seed(1)
+#' V <- simSynthData(ps_attitude, M = 3)
+#'
+#' \donttest{
+#' res <- sphericity_test(V, M = 3, iterations = 1000L)
+#' is.ps_test(res)
+#' }
+is.ps_test <- function(x) {
+  inherits(x, "ps_test")
 }
 
-#' @keywords internal
+
+#' Convert an internal test code to a display label.
+#'
+#' @param test Character string identifying the test.
+#'
+#' @return A character label.
+#'
+#' @noRd
+.test_label <- function(test) {
+  switch(
+    test,
+    gv           = "Generalized Variance Test",
+    sphericity   = "Sphericity Test",
+    independence = "Independence Test",
+    regression   = "Regression Test",
+    test
+  )
+}
+
+#' Format a number using compact or scientific notation.
+#'
+#' @param v Numeric value to format.
+#'
+#' @return A character string.
+#'
+#' @noRd
 .ps_fmt_sci <- function(v) {
-  if (abs(v) >= 0.001 && abs(v) < 1e5) return(sprintf("%.4g", v))
+  if (is.na(v) || !is.finite(v)) {
+    return("NA")
+  }
+
+  if (abs(v) >= 0.001 && abs(v) < 1e5) {
+    return(sprintf("%.4g", v))
+  }
+
   sprintf("%.3e", v)
 }
 
-#' @keywords internal
 #' Format a Monte Carlo p-value for display.
-#' Never returns "0.0000"; uses "< 1/B" notation when the MC count is zero.
-#' @param pval  Numeric p-value in [0, 1].
-#' @param B     Number of Monte Carlo iterations used (determines resolution).
+#'
+#' This helper never returns \code{"0.0000"}. If the Monte Carlo count is
+#' zero, it reports a conservative scientific-notation bound based on the
+#' simulation resolution. For example, with \code{B = 2000}, it reports
+#' \code{"< 1e-3"}.
+#'
+#' @param pval Numeric \eqn{p}-value in \eqn{[0, 1]}.
+#' @param B Number of Monte Carlo iterations used.
+#'
+#' @return A character string.
+#'
+#' @noRd
 .ps_fmt_pvalue <- function(pval, B = NULL) {
-  if (is.null(B)) B <- 10000L          # conservative default resolution
-  min_detectable <- 1.0 / B           # smallest non-zero MC p-value
 
-  if (is.na(pval) || !is.finite(pval)) return("NA")
-
-  if (pval == 0 || pval < min_detectable) {
-    # Express as "< 0.0001" (4 sig fig of min_detectable)
-    thresh <- signif(min_detectable, 1)
-    # Format threshold without trailing zeros
-    if (thresh >= 0.001) {
-      return(sprintf("< %.4f", thresh))
-    } else {
-      return(sprintf("< %.2e", thresh))
-    }
+  if (is.na(pval) || !is.finite(pval)) {
+    return("NA")
   }
 
-  if (pval >= 0.001) return(sprintf("%.4f", pval))
+  if (is.null(B) || is.na(B) || !is.finite(B) || B < 1L) {
+    B <- 10000L
+  }
+
+  B <- as.integer(B)
+
+  min_detectable <- 1 / B
+
+  if (pval <= 0 || pval < min_detectable) {
+    exponent <- ceiling(log10(min_detectable))
+    threshold <- 10^exponent
+    return(sprintf("< 1e%d", exponent))
+  }
+
+  if (pval >= 0.001) {
+    return(sprintf("%.4f", pval))
+  }
+
   sprintf("%.2e", pval)
 }
