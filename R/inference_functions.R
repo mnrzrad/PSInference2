@@ -353,8 +353,8 @@ sphericity_test <- function(V, M = 1L,
 #' independence_test(
 #'   V5,
 #'   M = 5,
-#'   group_a = c("rating", "complaints"),
-#'   group_b = c("privileges", "learning"),
+#'   group_a = c("rating", "complaints", "advance"),
+#'   group_b = c("privileges", "learning", "raises", "critical"),
 #'   iterations = 1000L
 #' )
 #' }
