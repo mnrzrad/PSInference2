@@ -463,3 +463,73 @@
     p = p
   )
 }
+
+#' Validate a positive integer scalar.
+#'
+#' @noRd
+.validate_positive_integer <- function(x, name, min_value = 1L) {
+
+  if (length(x) != 1L || !is.numeric(x) || !is.finite(x)) {
+    stop(
+      sprintf("'%s' must be a single positive integer.", name),
+      call. = FALSE
+    )
+  }
+
+  if (x != floor(x) || x < min_value) {
+    stop(
+      sprintf("'%s' must be a single positive integer.", name),
+      call. = FALSE
+    )
+  }
+
+  as.integer(x)
+}
+
+
+#' Validate common arguments for null-distribution simulations.
+#'
+#' @noRd
+.validate_distribution_args <- function(nsample, pvariates, iterations, M) {
+
+  n <- .validate_positive_integer(nsample, "nsample", min_value = 2L)
+  p <- .validate_positive_integer(pvariates, "pvariates", min_value = 1L)
+  it <- .validate_positive_integer(iterations, "iterations", min_value = 1L)
+  M <- .validate_positive_integer(M, "M", min_value = 1L)
+
+  if (n <= p) {
+    stop("'nsample' must exceed 'pvariates'.", call. = FALSE)
+  }
+
+  list(
+    n = n,
+    p = p,
+    iterations = it,
+    M = M,
+    N = n * M
+  )
+}
+
+
+#' Validate the block size argument.
+#'
+#' @noRd
+.validate_distribution_part <- function(part, p, require_p1_le_p2 = FALSE) {
+
+  p1 <- .validate_positive_integer(part, "part", min_value = 1L)
+
+  if (p1 >= p) {
+    stop("'part' must satisfy 1 <= part < pvariates.", call. = FALSE)
+  }
+
+  p2 <- p - p1
+
+  if (require_p1_le_p2 && p1 > p2) {
+    stop("Regression test requires p1 <= p2.", call. = FALSE)
+  }
+
+  list(
+    p1 = p1,
+    p2 = p2
+  )
+}
