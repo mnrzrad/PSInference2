@@ -24,7 +24,7 @@
 #' A list of class \code{mvn_test}, returned invisibly, with components:
 #' \describe{
 #'   \item{shapiro}{Data frame of per-variable Shapiro-Wilk statistics
-#'     and $p$-values.}
+#'     and \eqn{p}-values.}
 #'   \item{mardia_skewness}{Named list with components \code{statistic},
 #'        \code{df}, \code{p.value}, and \code{decision}.}
 #'   \item{mardia_kurtosis}{Named list with components \code{statistic},
