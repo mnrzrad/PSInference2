@@ -31,41 +31,26 @@ set.seed(2026)
 
 ## Statistical Disclosure Control and Synthetic Data
 
-Statistical agencies collect sensitive individual-level data from surveys
-and administrative registers. Before releasing such data publicly they must
-apply **statistical disclosure control** (SDC) to prevent identification of
-individual respondents while preserving statistical utility.
+Statistical agencies collect sensitive individual-level data from surveys and administrative registers. Before releasing such data publicly they must apply **statistical disclosure control** (SDC) to prevent identification of individual respondents while preserving statistical utility.
 
-**Synthetic data** replaces original confidential records with artificial
-values drawn from a model fitted to the original data. The released dataset
-contains no real observations, so individual privacy is protected by
-construction.
+**Synthetic data** replaces original confidential records with artificial values drawn from a model fitted to the original data. The released dataset contains no real observations, so individual privacy is protected by construction.
 
 ## The Plug-in Sampling Framework
 
-**Plug-in sampling** (PS) is a simple and tractable synthetic data mechanism.
-The unknown population parameters $\boldsymbol{\mu}$ and
-$\boldsymbol{\Sigma}$ are replaced by their sample counterparts
-$\bar{\mathbf{x}}$ and $\hat{\boldsymbol{\Sigma}}$, and synthetic
-observations are drawn from the resulting estimated model. Because the
-plug-in estimates are treated as fixed, the conditional distribution of
-the synthetic sufficient statistics given the original data is
-analytically tractable, enabling **exact finite-sample inference**.
+**Plug-in sampling** (PS) is a simple and tractable synthetic data mechanism. The unknown population parameters $\boldsymbol{\mu}$ and $\boldsymbol{\Sigma}$ are replaced by their sample counterparts $\bar{\mathbf{x}}$ and $\hat{\boldsymbol{\Sigma}}$, and synthetic observations are drawn from the resulting estimated model. Because the plug-in estimates are treated as fixed, the conditional distribution of the synthetic sufficient statistics given the original data is analytically tractable, enabling **exact finite-sample inference**.
 
 ## Single versus Multiple Releases
 
 When $M \geq 1$ synthetic datasets are released, they may be stacked into:
-$$\mathbf{V}_{\mathrm{complete}} =
+$$\mathbf{V}_{\mathrm{M}} =
   \begin{pmatrix} \mathbf{V}_1 \\ \vdots \\ \mathbf{V}_M
   \end{pmatrix} \in \mathbb{R}^{Mn \times p}$$
 
 The stacked synthetic Wishart satisfies:
-$$\mathbf{S}^\star_{\mathrm{complete}} \mid \mathbf{S}
-  \sim \mathcal{W}_p\!\left(Mn-1,\;\frac{1}{n-1}\mathbf{S}\right)$$
+$$(n-1)\mathbf{S}^\star_{\mathrm{M}} \mid \mathbf{S}
+  \sim \mathcal{W}_p\!\left(\mathbf{S}, Mn-1\right)$$
 
-This is the key result: the synthetic Wishart has degrees of freedom
-$Mn-1$ while the original sample Wishart retains $n-1$. Setting $M=1$
-recovers the single-release procedures of Klein et al. (2021).
+This is the key result: the synthetic Wishart has degrees of freedom $Mn-1$ while the original sample Wishart retains $n-1$. Setting $M=1$ recovers the single-release procedures of Klein et al. (2021).
 
 ---
 
@@ -73,19 +58,9 @@ recovers the single-release procedures of Klein et al. (2021).
 
 ## SDC Scenario
 
-The package ships with `brittany_soil_ps`, a real dataset from a soil
-survey of cultivated fields on loess-silt parent material in Brittany,
-France (Morvan et al., 2023). It motivates a realistic SDC scenario:
+The package ships with `brittany_soil_ps`, a real dataset from a soil survey of cultivated fields on loess-silt parent material in Brittany, France (Morvan et al., 2023). It motivates a realistic SDC scenario:
 
-> A regional agency releases standardised soil physicochemical data from
-> loess farms. Three **public indicators** (pH, log CEC) are already in
-> public soil maps and can be released as observed. Three **sensitive
-> farm-management indicators** (log organic carbon, log nitrogen, log
-> phosphorus) are commercially confidential and are released as PS
-> synthetic draws.
-
-This gives a natural $p = 6$ dataset with a meaningful two-block
-structure ($p_1 = p_2 = 3$).
+This gives a natural $p = 6$ dataset with a meaningful two-block structure ($p_1 = p_2 = 3$).
 
 ## Loading and Inspecting the Dataset
 
@@ -97,9 +72,7 @@ cat("Variables :", colnames(brittany_soil_ps), "\n\n")
 round(head(brittany_soil_ps, 4), 3)
 ```
 
-All variables are standardised (mean 0, sd 1). The correlation matrix
-reveals two highly correlated within-block structures and notable
-cross-block correlations through `log_CEC_Metson`:
+All variables are standardized. The correlation matrix reveals two highly correlated within-block structures and notable cross-block correlations through `log_CEC_Metson`:
 
 ```{r corr}
 round(cor(brittany_soil_ps), 2)
@@ -107,18 +80,15 @@ round(cor(brittany_soil_ps), 2)
 
 ## Checking Multivariate Normality
 
-Before generating synthetic data it is essential to verify that the
-original data satisfy the multivariate normality assumption required by
-the PS procedures.
+Before generating synthetic data it is essential to verify that the original data satisfy the multivariate normality assumption required by the PS procedures.
 
-```{r mvn, fig.cap = "MVN diagnostic panel for brittany_soil_ps. Histograms (blue = SW pass) with fitted normal curves, and chi-square Q-Q plot.", fig.height = 6, fig.width = 10}
+```{r mvn, fig.cap = "MVN diagnostic panel for `brittany_soil_ps`. Histograms (blue = SW pass) with fitted normal curves, and chi-square Q-Q plot.", fig.height = 6, fig.width = 6.9}
 mvn_result <- mvn_test(brittany_soil_ps, hz_nsim = 1000)
 ```
 
 All five tests fail to reject multivariate normality:
 
 ```{r mvn_summary}
-# Print the overall conclusion
 print(mvn_result)
 ```
 
@@ -126,9 +96,7 @@ print(mvn_result)
 
 # Generating Synthetic Releases
 
-The function `simSynthData(X, M)` generates $M$ PS synthetic releases
-stacked into an $Mn \times p$ matrix. The agency decides to release
-$M = 3$ independent synthetic copies:
+The function `simSynthData(X, M)` generates $M$ PS synthetic releases stacked into an $Mn \times p$ matrix. The agency decides to release $M = 3$ independent synthetic copies:
 
 ```{r gen_synth}
 set.seed(2026)
@@ -143,25 +111,19 @@ cat("Single release: ", nrow(V1), "x", ncol(V1), "\n")
 # M = 3: three stacked releases
 V3 <- simSynthData(X, M = 3)
 cat("Three releases: ", nrow(V3), "x", ncol(V3), "\n")
-cat("Row names (first 4):", head(rownames(V3), 4), "\n")
 ```
 
 ---
 
 # Exact Inferential Procedures
 
-We apply all four exact PS procedures using the **named block interface**
-so that variable names appear directly in the output. For each test we
-show results for both $M = 1$ (single release) and $M = 3$ (three
-releases) side by side to illustrate how inference sharpens as more
-synthetic datasets are released.
+We apply all four exact PS procedures using the named block interface so that variable names appear directly in the output. For each test we show results for both $M = 1$ (single release) and $M = 3$ (three releases) side by side to illustrate how inference sharpens as more synthetic datasets are released.
 
-## Generalised Variance
+## Generalized Variance
 
-Tests $H_0: |\Sigma| = |\Sigma_0|$ (two-sided), using $\Sigma_0 =
-\hat{\Sigma}$ from the original data.
+Tests $\mathcal{H}_0: |\Sigma| = |\Sigma_0|$ (two-sided), using $\Sigma_0 = \hat{\Sigma}$ from the original data.
 
-```{r gv, fig.cap = "GV null distribution (log10 scale) for M = 1 (left) and M = 3 (right). The null distribution narrows with M; the observed statistic falls within the non-rejection region in both cases.", fig.height = 6.5, fig.width = 10}
+```{r gv, fig.cap = "GV null distribution (log10 scale) for M = 1 (left) and M = 3 (right). The null distribution narrows with M; the observed statistic falls within the non-rejection region in both cases.", fig.height = 4, fig.width = 6.9}
 op <- par(mfrow = c(1, 2))
 gv1 <- gv_test(V1, M = 1, Sigma = cov(X), iterations = 5000)
 plot(gv1, main = "Gen. Variance  (M = 1)")
@@ -175,16 +137,13 @@ cat("M = 1: p =", gv1$p.value, "|", gv1$decision, "\n")
 cat("M = 3: p =", gv3$p.value, "|", gv3$decision, "\n")
 ```
 
-The test fails to reject for both $M = 1$ and $M = 3$: the PS mechanism
-preserves the overall covariance scale regardless of the number of
-releases.
+The test fails to reject for both $M = 1$ and $M = 3$: the PS mechanism preserves the overall covariance scale regardless of the number of releases.
 
 ## Sphericity Test
 
-Tests $H_0: \Sigma = \sigma^2 I_6$. Given the strong within-block
-correlations and different scales, strong rejection is expected.
+Tests $\mathcal{H}_0: \Sigma = \sigma^2 I_6$. Given the strong within-block correlations and different scales, strong rejection is expected.
 
-```{r sph, fig.cap = "Sphericity null distribution for M = 1 (left) and M = 3 (right). The observed statistic is far into the left rejection region in both cases; larger M concentrates the null distribution.", fig.height = 6.5, fig.width = 10}
+```{r sph, fig.cap = "Sphericity null distribution for M = 1 (left) and M = 3 (right). The observed statistic is far into the left rejection region in both cases; larger M concentrates the null distribution.", fig.height = 4, fig.width = 6.9}
 op <- par(mfrow = c(1, 2))
 sph1 <- sphericity_test(V1, M = 1, iterations = 5000)
 plot(sph1, main = "Sphericity  (M = 1)")
@@ -204,16 +163,13 @@ cat(
 )
 ```
 
-Sphericity is decisively rejected for both $M = 1$ and $M = 3$. The
-null distribution is visibly more concentrated for $M = 3$, reflecting
-the increased effective sample size $N = Mn = 111$.
+Sphericity is decisively rejected for both $M = 1$ and $M = 3$. The null distribution is visibly more concentrated for $M = 3$, reflecting the increased effective sample size $N = Mn = 111$.
 
 ## Independence Test
 
-Tests $H_0: \Sigma_{12} = \mathbf{0}$ --- are the public soil indicators
-independent of the sensitive farm indicators?
+Tests $\mathcal{H}_0: \Sigma_{12} = \mathbf{0}$ --- are the public soil indicators independent of the sensitive farm indicators?
 
-```{r ind, fig.cap = "Independence null distribution for M = 1 (left) and M = 3 (right). Rejection is clear in both cases; the critical value moves right as M increases.", fig.height = 6.5, fig.width = 10}
+```{r ind, fig.cap = "Independence null distribution for M = 1 (left) and M = 3 (right). Rejection is clear in both cases; the critical value moves right as M increases.", fig.height = 4, fig.width = 6.7}
 op <- par(mfrow = c(1, 2))
 ind1 <- independence_test(V1,
   M = 1,
@@ -243,17 +199,13 @@ cat(
 )
 ```
 
-Independence is rejected in both cases. The stronger evidence at $M = 3$
-reflects the fact that more synthetic data narrows the null distribution
-and lowers the critical value, making it easier to detect the true
-cross-block correlations.
+Independence is rejected in both cases. The stronger evidence at $M = 3$ reflects the fact that more synthetic data narrows the null distribution and lowers the critical value, making it easier to detect the true cross-block correlations.
 
 ## Regression Test
 
-Tests $H_0: \Delta = \mathbf{0}$ --- can the public indicators be
-predicted from the sensitive block?
+Tests $\mathcal{H}_0: \Delta = \mathbf{0}$ --- can the public indicators be predicted from the sensitive block?
 
-```{r reg, fig.cap = "Regression null distribution (log10 scale) for M = 1 (left) and M = 3 (right). Both reject the zero-regression null.", fig.height = 6.5, fig.width = 10}
+```{r reg, fig.cap = "Regression null distribution (log10 scale) for M = 1 (left) and M = 3 (right). Both reject the zero-regression null.", fig.height = 4, fig.width = 6.9}
 op <- par(mfrow = c(1, 2))
 reg1 <- regression_test(V1,
   M = 1,
@@ -285,19 +237,15 @@ cat(
 )
 ```
 
-The zero-regression null is rejected for both $M = 1$ and $M = 3$,
-confirming that partial reconstruction of the public indicators from
-the sensitive block is statistically detectable.
+The zero-regression null is rejected for both $M = 1$ and $M = 3$, confirming that partial reconstruction of the public indicators from the sensitive block is statistically detectable.
 
 ---
 
 # Effect of $M$ on Inference
 
-The side-by-side plots above already show the sharpening of inference
-as $M$ increases from 1 to 3. The following panel extends this to
-$M \in \{1, 2, 3, 5\}$ for the sphericity test:
+The side-by-side plots above already show the sharpening of inference as $M$ increases from 1 to 3. The following panel extends this to $M \in \{1, 2, 3, 5\}$ for the sphericity test:
 
-```{r M_effect, fig.cap = "Sphericity null distribution for M = 1, 2, 3, 5. The distribution concentrates as M grows, lowering the critical value and strengthening evidence against the false null.", fig.height = 7, fig.width = 9}
+```{r M_effect, fig.cap = "Sphericity null distribution for M = 1, 2, 3, 5. The distribution concentrates as M grows, lowering the critical value and strengthening evidence against the false null.", fig.height = 5, fig.width = 6.9}
 op <- par(mfrow = c(2, 2))
 for (m in c(1L, 2L, 3L, 5L)) {
   Vm <- simSynthData(X, M = m)
@@ -330,58 +278,34 @@ results <- lapply(c(1L, 2L, 3L, 5L), function(m) {
 do.call(rbind, results)
 ```
 
-As $M$ increases the evidence against both sphericity and independence
-strengthens monotonically, with $p$-values decreasing and test statistics
-moving further from the null.
+As $M$ increases the evidence against both sphericity and independence strengthens monotonically, with $p$-values decreasing and test statistics moving further from the null.
 
 ---
 
 # Summary
 
-## What the Results Tell the Agency
+**What do the Results Tell the Agency?**
 
 | Test | $M=1$ | $M=3$ | Interpretation |
 |---|---|---|---|
-| Generalised variance | Fail to reject | Fail to reject | PS preserves overall covariance scale |
+| Generalized variance | Fail to reject | Fail to reject | PS preserves overall covariance scale |
 | Sphericity | **Reject** | **Reject** | Soil variables are highly correlated, unequal variance |
 | Independence | **Reject** | **Reject** | Public and sensitive blocks are correlated |
 | Regression | **Reject** | **Reject** | Public indicators are partially predictable from sensitive block |
 
-The consistency across $M = 1$ and $M = 3$ confirms that the
-conclusions are stable: they are a property of the original data
-structure, not of the specific synthetic realisation. The stronger
-$p$-values at $M = 3$ reflect increased inferential precision from
-more synthetic information, not a change in the underlying finding.
+The consistency across $M = 1$ and $M = 3$ confirms that the conclusions are stable: they are a property of the original data structure, not of the specific synthetic realisation. The stronger $p$-values at $M = 3$ reflect increased inferential precision from more synthetic information, not a change in the underlying finding.
 
-## Function Summary
-
-| Function | Key arguments | Purpose |
-|---|---|---|
-| `simSynthData(X, M)` | `M` (default 1) | Generate $M$ PS releases |
-| `mvn_test(X)` | `plot`, `hz_nsim` | Verify MVN assumption |
-| `gv_test(V, M, Sigma)` | `Sigma` | Test $H_0: \|\Sigma\|=\|\Sigma_0\|$ |
-| `sphericity_test(V, M)` | — | Test $H_0: \Sigma = \sigma^2 I$ |
-| `independence_test(V, M, ...)` | `group_a`, `group_b` | Test $H_0: \Sigma_{12}=0$ |
-| `regression_test(V, M, ...)` | `response`, `predictors`, `Delta0` | Test $H_0: \Delta = \Delta_0$ |
-| `ps_test(V, M, test, plot)` | `test`, `plot=TRUE` | Unified wrapper |
-| `partition(M, part1)` | `part1` | Block-split a covariance matrix |
 
 ---
 
 # References
 
-Klein, M., Moura, R., and Sinha, B. (2021). Multivariate normal inference
-based on singly imputed synthetic data under plug-in sampling.
-*Sankhya B*, 83, 273--287.
+Klein, M., Moura, R., and Sinha, B. (2021). Multivariate normal inference based on singly imputed synthetic data under plug-in sampling. *Sankhya B*, **83**, 273--287.
 
-Morvan, T., Lambert, Y., Germain, P., Lemercier, B., Moreira, M. and
-Beff, L. (2023). A dataset of physico-chemical properties, extractable
-organic N, N mineralisation and physical organic matter fractionation
-of soils. *Data in Brief*, 51, 109776.
+Morvan, T., Lambert, Y., Germain, P., Lemercier, B., Moreira, M. and Beff, L. (2023). A dataset of physico-chemical properties, extractable organic N, N mineralisation and physical organic matter fractionation
+of soils. *Data in Brief*, **51**, 109776.
 
-Raghunathan, T. E., Reiter, J. P., and Rubin, D. B. (2003). Multiple
-imputation for statistical disclosure limitation. *Journal of Official
-Statistics*, 19, 1--16.
+Raghunathan, T. E., Reiter, J. P., and Rubin, D. B. (2003). Multiple imputation for statistical disclosure limitation. *Journal of Official Statistics*, **19**, 1--16.
 
 Rubin, D. B. (1993). Statistical disclosure limitation.
-*Journal of Official Statistics*, 9, 461--468.
+*Journal of Official Statistics*, **9**, 461--468.

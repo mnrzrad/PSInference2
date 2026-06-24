@@ -21,11 +21,10 @@ round(head(brittany_soil_ps, 4), 3)
 ## ----corr---------------------------------------------------------------------
 round(cor(brittany_soil_ps), 2)
 
-## ----mvn, fig.cap = "MVN diagnostic panel for brittany_soil_ps. Histograms (blue = SW pass) with fitted normal curves, and chi-square Q-Q plot.", fig.height = 6, fig.width = 10----
+## ----mvn, fig.cap = "MVN diagnostic panel for `brittany_soil_ps`. Histograms (blue = SW pass) with fitted normal curves, and chi-square Q-Q plot.", fig.height = 6, fig.width = 6.9----
 mvn_result <- mvn_test(brittany_soil_ps, hz_nsim = 1000)
 
 ## ----mvn_summary--------------------------------------------------------------
-# Print the overall conclusion
 print(mvn_result)
 
 ## ----gen_synth----------------------------------------------------------------
@@ -41,9 +40,8 @@ cat("Single release: ", nrow(V1), "x", ncol(V1), "\n")
 # M = 3: three stacked releases
 V3 <- simSynthData(X, M = 3)
 cat("Three releases: ", nrow(V3), "x", ncol(V3), "\n")
-cat("Row names (first 4):", head(rownames(V3), 4), "\n")
 
-## ----gv, fig.cap = "GV null distribution (log10 scale) for M = 1 (left) and M = 3 (right). The null distribution narrows with M; the observed statistic falls within the non-rejection region in both cases.", fig.height = 6.5, fig.width = 10----
+## ----gv, fig.cap = "GV null distribution (log10 scale) for M = 1 (left) and M = 3 (right). The null distribution narrows with M; the observed statistic falls within the non-rejection region in both cases.", fig.height = 4, fig.width = 6.9----
 op <- par(mfrow = c(1, 2))
 gv1 <- gv_test(V1, M = 1, Sigma = cov(X), iterations = 5000)
 plot(gv1, main = "Gen. Variance  (M = 1)")

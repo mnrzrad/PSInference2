@@ -412,15 +412,26 @@ plot.ps_test <- function(x,
 
   if (multi_panel) {
     op <- graphics::par(
-      mar = c(4.8, 4.0, 2.5, 0.8),
+      mar = c(5.4, 4.0, 2.5, 0.8),
       mgp = c(2.4, 0.6, 0)
     )
+
+    cex_main <- 0.85
+    cex_lab <- 0.80
+    cex_axis <- 0.70
+    cex_ann <- 0.50
+
   } else {
     op <- graphics::par(
       oma = c(6.0, 0, 0, 0),
       mar = c(4.0, 4.5, 2.8, 1.2),
       mgp = c(2.8, 0.7, 0)
     )
+
+    cex_main <- 0.90
+    cex_lab <- 0.85
+    cex_axis <- 0.75
+    cex_ann <- 0.75
   }
 
   on.exit(graphics::par(op), add = TRUE)
@@ -437,11 +448,13 @@ plot.ps_test <- function(x,
     col = "steelblue",
     axes = FALSE,
     zero.line = FALSE,
+    cex.main = cex_main,
+    cex.lab = cex_lab,
     ...
   )
 
-  graphics::axis(1L, las = 1L)
-  graphics::axis(2L, las = 1L)
+  graphics::axis(1L, las = 1L, cex.axis = cex_axis)
+  graphics::axis(2L, las = 1L, cex.axis = cex_axis)
   graphics::box()
 
   ## Null distribution fill
@@ -525,13 +538,14 @@ plot.ps_test <- function(x,
 
   if (multi_panel) {
     sub1 <- sprintf("%s   |   %s", ann_obs, ann_pval)
-    sub2 <- sprintf("%s   |   %s", ann_dec, ann_crit)
+    sub2 <- ann_dec
+    sub3 <- ann_crit
 
     graphics::mtext(
       sub1,
       side = 1L,
       line = 3.0,
-      cex = 0.65,
+      cex = cex_ann,
       col = "black",
       font = 1L
     )
@@ -539,8 +553,8 @@ plot.ps_test <- function(x,
     graphics::mtext(
       sub2,
       side = 1L,
-      line = 4.0,
-      cex = 0.65,
+      line = 3.8,
+      cex = cex_ann,
       col = dec_col,
       font = 1L
     )
@@ -561,8 +575,8 @@ plot.ps_test <- function(x,
         ann[[k]][[1L]],
         side = 1L,
         outer = TRUE,
-        line = (k - 1L) * 1.20 + 0.8,
-        cex = 0.90,
+        line = (k - 1L) * 1.15 + 0.8,
+        cex = cex_ann,
         adj = 0.5,
         font = ann[[k]][[3L]],
         col = ann[[k]][[2L]]
@@ -610,11 +624,11 @@ is.ps_test <- function(x) {
 #' @noRd
 .test_label <- function(test) {
   switch(test,
-    gv           = "Generalized Variance Test",
-    sphericity   = "Sphericity Test",
-    independence = "Independence Test",
-    regression   = "Regression Test",
-    test
+         gv           = "Generalized Variance Test",
+         sphericity   = "Sphericity Test",
+         independence = "Independence Test",
+         regression   = "Regression Test",
+         test
   )
 }
 
