@@ -53,7 +53,7 @@ par(op)
 cat("M = 1: p =", gv1$p.value, "|", gv1$decision, "\n")
 cat("M = 3: p =", gv3$p.value, "|", gv3$decision, "\n")
 
-## ----sph, fig.cap = "Sphericity null distribution for M = 1 (left) and M = 3 (right). The observed statistic is far into the left rejection region in both cases; larger M concentrates the null distribution.", fig.height = 6.5, fig.width = 10----
+## ----sph, fig.cap = "Sphericity null distribution for M = 1 (left) and M = 3 (right). The observed statistic is far into the left rejection region in both cases; larger M concentrates the null distribution.", fig.height = 4, fig.width = 6.9----
 op <- par(mfrow = c(1, 2))
 sph1 <- sphericity_test(V1, M = 1, iterations = 5000)
 plot(sph1, main = "Sphericity  (M = 1)")
@@ -71,7 +71,7 @@ cat(
   "| p =", sph3$p.value, "|", sph3$decision, "\n"
 )
 
-## ----ind, fig.cap = "Independence null distribution for M = 1 (left) and M = 3 (right). Rejection is clear in both cases; the critical value moves right as M increases.", fig.height = 6.5, fig.width = 10----
+## ----ind, fig.cap = "Independence null distribution for M = 1 (left) and M = 3 (right). Rejection is clear in both cases; the critical value moves right as M increases.", fig.height = 4, fig.width = 6.7----
 op <- par(mfrow = c(1, 2))
 ind1 <- independence_test(V1,
   M = 1,
@@ -99,7 +99,7 @@ cat(
   "| p =", ind3$p.value, "|", ind3$decision, "\n"
 )
 
-## ----reg, fig.cap = "Regression null distribution (log10 scale) for M = 1 (left) and M = 3 (right). Both reject the zero-regression null.", fig.height = 6.5, fig.width = 10----
+## ----reg, fig.cap = "Regression null distribution (log10 scale) for M = 1 (left) and M = 3 (right). Both reject the zero-regression null.", fig.height = 4, fig.width = 6.9----
 op <- par(mfrow = c(1, 2))
 reg1 <- regression_test(V1,
   M = 1,
@@ -129,7 +129,7 @@ cat(
   "| p =", reg3$p.value, "|", reg3$decision, "\n"
 )
 
-## ----M_effect, fig.cap = "Sphericity null distribution for M = 1, 2, 3, 5. The distribution concentrates as M grows, lowering the critical value and strengthening evidence against the false null.", fig.height = 7, fig.width = 9----
+## ----M_effect, fig.cap = "Sphericity null distribution for M = 1, 2, 3, 5. The distribution concentrates as M grows, lowering the critical value and strengthening evidence against the false null.", fig.height = 5, fig.width = 6.9----
 op <- par(mfrow = c(2, 2))
 for (m in c(1L, 2L, 3L, 5L)) {
   Vm <- simSynthData(X, M = m)

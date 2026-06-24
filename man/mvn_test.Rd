@@ -53,19 +53,46 @@ and a chi-square Q-Q plot of squared Mahalanobis distances.
 }
 \details{
 \strong{Mardia's skewness test} evaluates the null hypothesis of zero
- multivariate skewness:
- \deqn{
-   \kappa = \frac{n}{6} b_{1,p} \sim \chi^2\!\Bigl(
-      \frac{p(p+1)(p+2)}{6}\Bigr), \quad
-       b_{1,p} = n^{-2}\textstyle\sum_{i,j} d_{ij}^3.
- }
-
-\strong{Mardia's kurtosis} evaluates whether the multivariate kurtosis
-equals \eqn{p(p+2)}:
+multivariate skewness:
 \deqn{
-  z = \frac{b_{2,p} - p(p+2)}{\sqrt{8p(p+2)/n}} \sim N(0,1), \quad
-  b_{2,p} = n^{-1}\textstyle\sum_i d_{ii}^2.
+  \kappa = \frac{n}{6} b_{1,p}
+  \sim \chi^2\!\left(\frac{p(p+1)(p+2)}{6}\right),
+  \qquad
+  b_{1,p}
+  =
+  \frac{1}{n^2}
+  \sum_{a=1}^n
+  \sum_{b=1}^n
+  d_{ab}^3.
 }
+Here
+\deqn{
+  d_{ab}
+  =
+  (\boldsymbol{x}_a-\bar{\boldsymbol{x}})'
+  S^{-1}
+  (\boldsymbol{x}_b-\bar{\boldsymbol{x}})
+}
+is a Mahalanobis inner product between observations \eqn{a} and
+\eqn{b}. The indices \eqn{a} and \eqn{b} run over observations,
+not variables.
+
+\strong{Mardia's kurtosis test} evaluates whether the multivariate
+kurtosis equals \eqn{p(p+2)}:
+\deqn{
+  z =
+  \frac{b_{2,p} - p(p+2)}
+  {\sqrt{8p(p+2)/n}}
+  \sim N(0,1),
+  \qquad
+  b_{2,p}
+  =
+  \frac{1}{n}
+  \sum_{a=1}^n
+  d_{aa}^2.
+}
+The quantity \eqn{d_{aa}} is the squared Mahalanobis distance of
+observation \eqn{a} from the sample mean.
 
 \strong{The Henze-Zirkler omnibus test} is based on a weighted
 \eqn{L^2} distance between the empirical and theoretical
