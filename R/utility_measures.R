@@ -101,7 +101,7 @@
 #' }
 #'
 #' \subsection{Mean confidence interval overlap}{
-#' For each variable \eqn{j}, a \eqn{(1-\alpha)} confidence interval is
+#' For each variable \eqn{j}, a \eqn{(1-\alpha)} confidence interval (CI) is
 #' computed from the original data and from the synthetic data. The overlap
 #' coefficient is
 #' \deqn{

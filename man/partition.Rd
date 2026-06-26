@@ -88,8 +88,8 @@ b2$D
 data(attitude)
 b3 <- partition(
   cov(attitude),
-  part1 = c("rating", "complaints"),
-  part2 = c("privileges", "learning")
+  part1 = c("rating", "complaints", "raises"),
+  part2 = c("privileges", "learning", "advance", "critical")
 )
 b3$A
 b3$D

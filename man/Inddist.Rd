@@ -34,9 +34,9 @@ Under the stacking result, the compound Wishart representation gives
 }
 where
 \eqn{\Omega_1 \sim \mathcal{W}_p(n - 1, I_p)} and
-\eqn{\Omega_2 \mid \Omega_1
+\eqn{(n - 1)\Omega_2 \mid \Omega_1
 \sim
-\mathcal{W}_p(Mn - 1,\,(n - 1)^{-1}\Omega_1)}.
+\mathcal{W}_p(Mn - 1,\,\Omega_1)}.
 }
 \examples{
 set.seed(1)

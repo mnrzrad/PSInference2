@@ -31,9 +31,9 @@ The simulation uses the same compound Wishart structure as
 \deqn{
   \Omega_1 \sim \mathcal{W}_p(n - 1, I_p),
   \qquad
-  \Omega_2 \mid \Omega_1
+  (n - 1)\Omega_2 \mid \Omega_1
   \sim
-  \mathcal{W}_p(Mn - 1,\,(n - 1)^{-1}\Omega_1).
+  \mathcal{W}_p(Mn - 1,\,\Omega_1).
 }
 }
 \examples{
