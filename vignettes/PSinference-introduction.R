@@ -21,7 +21,7 @@ round(head(brittany_soil_ps, 4), 3)
 ## ----corr---------------------------------------------------------------------
 round(cor(brittany_soil_ps), 2)
 
-## ----mvn, fig.cap = "MVN diagnostic panel for `brittany_soil_ps`. Histograms (blue = SW pass) with fitted normal curves, and chi-square Q-Q plot.", fig.height = 6, fig.width = 6.9----
+## ----mvn, fig.cap = "Multivariate normality diagnostic panel for `brittany_soil_ps`. Histograms (blue = Shapiro-Wilk test not rejected) with fitted normal curves, and chi-square Q-Q plot.", fig.height = 6, fig.width = 6.9----
 mvn_result <- mvn_test(brittany_soil_ps, hz_nsim = 1000)
 
 ## ----mvn_summary--------------------------------------------------------------
