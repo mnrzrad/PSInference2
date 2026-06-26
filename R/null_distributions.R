@@ -6,11 +6,11 @@
 #'
 #' Under the multiple-release stacking result,
 #' \deqn{
-#'   \mathbf{S}^\star_{\mathrm{M}} \mid \mathbf{S}
+#'   \mathbf{(n-1)S}^\star_{\mathrm{M}} \mid \mathbf{S}
 #'   \sim
 #'   \mathcal{W}_p\left(
 #'     Mn - 1,\;
-#'     \frac{\mathbf{S}}{n - 1}
+#'     \mathbf{S}
 #'   \right),
 #' }
 #' the Bartlett decomposition gives
