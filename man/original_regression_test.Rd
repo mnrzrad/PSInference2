@@ -93,8 +93,8 @@ original_regression_test(X,
 )
 }
 \references{
-Anderson, T. W. (1984). \emph{An Introduction to Multivariate
-Statistical Analysis}, 2nd ed. Wiley, Section 8.4.
+Anderson, T. W. (1984). An Introduction to Multivariate Statistical Analysis
+(2nd ed.). John Wiley & Sons, New York.
 
 Rao, C. R. (1951). An asymptotic expansion of the distribution of
 Wilks' criterion. \emph{Bulletin of the International Statistical
