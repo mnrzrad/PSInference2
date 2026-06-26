@@ -43,8 +43,8 @@
 #' \code{\link{gv_test}}
 #'
 #' @references
-#' Anderson, T. W. (1984). \emph{An Introduction to Multivariate
-#' Statistical Analysis}, 2nd ed. Wiley.
+#' Anderson, T. W. (1984). An Introduction to Multivariate Statistical Analysis
+#' (2nd ed.). John Wiley & Sons, New York.
 #'
 #' @export
 #'
@@ -133,12 +133,12 @@ original_gv_test <- function(X, Sigma0 = NULL, alpha = 0.05) {
 #' \code{\link{sphericity_test}}
 #'
 #' @references
-#' Anderson, T. W. (1984). \emph{An Introduction to Multivariate
-#' Statistical Analysis}, 2nd ed. Wiley.
+#' Anderson, T. W. (1984). An Introduction to Multivariate Statistical Analysis
+#' (2nd ed.). John Wiley & Sons, New York.
 #'
 #' Bartlett, M. S. (1954). A note on the multiplying factors for various
 #' chi-square approximations. \emph{Journal of the Royal Statistical
-#' Society Series B}, \strong{16}, 296--298.
+#' Society: Series B}, \strong{16}, 296--298.
 #'
 #'
 #'
@@ -216,8 +216,8 @@ original_sphericity_test <- function(X, alpha = 0.05) {
 #' \code{\link{independence_test}}
 #'
 #' @references
-#' Anderson, T. W. (1984). \emph{An Introduction to Multivariate
-#' Statistical Analysis}, 2nd ed. Wiley.
+#' Anderson, T. W. (1984). An Introduction to Multivariate Statistical Analysis
+#' (2nd ed.). John Wiley & Sons, New York.
 #'
 #' @export
 #'
