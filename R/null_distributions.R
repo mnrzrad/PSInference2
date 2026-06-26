@@ -186,9 +186,9 @@ Sphdist <- function(nsample, pvariates, iterations = 10000L, M = 1L) {
 #' }
 #' where
 #' \eqn{\Omega_1 \sim \mathcal{W}_p(n - 1, I_p)} and
-#' \eqn{\Omega_2 \mid \Omega_1
+#' \eqn{(n - 1)\Omega_2 \mid \Omega_1
 #' \sim
-#' \mathcal{W}_p(Mn - 1,\,(n - 1)^{-1}\Omega_1)}.
+#' \mathcal{W}_p(Mn - 1,\,\Omega_1)}.
 #'
 #'
 #' @param part Size of the first variable block, \eqn{p_1}.
@@ -278,9 +278,9 @@ Inddist <- function(part, nsample, pvariates,
 #' \deqn{
 #'   \Omega_1 \sim \mathcal{W}_p(n - 1, I_p),
 #'   \qquad
-#'   \Omega_2 \mid \Omega_1
+#'   (n - 1)\Omega_2 \mid \Omega_1
 #'   \sim
-#'   \mathcal{W}_p(Mn - 1,\,(n - 1)^{-1}\Omega_1).
+#'   \mathcal{W}_p(Mn - 1,\,\Omega_1).
 #' }
 #'
 #' @param part Size of the first variable block, \eqn{p_1}. Must satisfy
