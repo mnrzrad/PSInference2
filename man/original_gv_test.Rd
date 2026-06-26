@@ -60,8 +60,8 @@ Sigma0 <- diag(ncol(X))
 original_gv_test(X, Sigma0 = Sigma0)
 }
 \references{
-Anderson, T. W. (1984). \emph{An Introduction to Multivariate
-Statistical Analysis}, 2nd ed. Wiley.
+Anderson, T. W. (1984). An Introduction to Multivariate Statistical Analysis
+(2nd ed.). John Wiley & Sons, New York.
 }
 \seealso{
 \code{\link{gv_test}}

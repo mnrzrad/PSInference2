@@ -59,8 +59,8 @@ original_independence_test(brittany_soil_ps,
 )
 }
 \references{
-Anderson, T. W. (1984). \emph{An Introduction to Multivariate
-Statistical Analysis}, 2nd ed. Wiley.
+Anderson, T. W. (1984). An Introduction to Multivariate Statistical Analysis
+(2nd ed.). John Wiley & Sons, New York.
 }
 \seealso{
 \code{\link{independence_test}}
