@@ -644,3 +644,21 @@
 
   ""
 }
+
+
+#' correct p_values
+#'
+#' @param p p-value
+#'
+#' @return numeric
+#'
+#' @noRd
+.fmt_p <- function(p, digits = 4) {
+  if (is.na(p)) return("NA")
+  thresh <- 10^(-digits)
+  if (p < thresh) {
+    sprintf("< %s", format(thresh, scientific = FALSE))
+  } else {
+    sprintf(paste0("%.", digits, "f"), p)
+  }
+}
