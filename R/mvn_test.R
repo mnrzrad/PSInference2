@@ -425,7 +425,7 @@ mvn_test <- function(X, alpha = 0.05,
         side = 3L, line = 1.75,
         cex = 0.90, col = "black", font = 2L
       )
-      graphics::mtext(sprintf("SW  p = %.3f", sw_pval_j),
+      graphics::mtext(sprintf("SW  p = %s", .fmt_p(sw_pval_j, 3)),
         side = 3L, line = 0.45,
         cex = 0.78,
         col = if (sw_pass_j) "steelblue4" else "firebrick",
@@ -453,7 +453,7 @@ mvn_test <- function(X, alpha = 0.05,
 
     # Summarize Mardia results in the Q-Q subtitle
     graphics::mtext(
-      sprintf("Mardia: skew p=%.3f  kurt p=%.3f", p_sk, p_ku),
+      sprintf("Mardia: skew p=%s  kurt p=%s", .fmt_p(p_sk, 3), .fmt_p(p_ku, 3)),
       side = 3L, line = 0.45, cex = 0.75,
       col = if (p_sk > alpha && p_ku > alpha) {
         "steelblue4"
@@ -486,13 +486,15 @@ mvn_test <- function(X, alpha = 0.05,
     cat(bar, "\n\n")
 
     cat("1. Univariate Shapiro-Wilk Tests\n")
-    print(sw_df, row.names = FALSE)
+    sw_df_print <- sw_df
+    sw_df_print$p.value <- vapply(sw_df$p.value, .fmt_p, character(1))
+    print(sw_df_print, row.names = FALSE)
 
     cat("\n2. Mardia Skewness Test\n")
     cat(sprintf(
-      "   b1p = %.4f | chi-sq(df=%d) = %.4f | p = %.4f | %s\n",
+      "   b1p = %.4f | chi-sq(df=%d) = %.4f | p = %s | %s\n",
       mardia_sk$b1p, mardia_sk$df, mardia_sk$statistic,
-      mardia_sk$p.value, mardia_sk$decision
+      .fmt_p(mardia_sk$p.value), mardia_sk$decision
     ))
 
     cat("\n3. Mardia Kurtosis Test\n")
